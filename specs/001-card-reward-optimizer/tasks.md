@@ -29,13 +29,13 @@ description: "Task list for 信用卡消費匯入與通路回饋最佳化"
 
 **Purpose**: 版本控制、決定未決技術項目、專案骨架、單一檢查腳本
 
-- [ ] T001 ✅ 平台已決定為 GitHub（2026-11-03，AD-009）；**待執行**：將專案建立為版本控制庫、建立排除憑證檔與管理員資料的忽略規則，並在建立時查詢 pytest、Semgrep、pip-audit、gitleaks 的最新版、與使用者確認後寫入 AD-009。**Constitution XI 的前置條件，擋住 T008 及所有合併**
+- [ ] T001 ✅ 平台已決定為 GitHub（2026-11-03，AD-009）；✅ 已完成：git 庫已連到 GitHub 並推送 `main`（commit 041aab9）、`.gitignore` 已建立、工具版本已查詢並寫入 AD-009。**待執行**：依 T003 建立相依檔並鎖定版本。**Constitution XI 的前置條件，擋住 T008 及所有合併**
 - [ ] T002 ⚠️ DECISION **TLS**：決定管理員本機服務的本機回送連線是否須使用 TLS（plan.md 待決定閘門第 1 項、research.md R-01）。若須 TLS，記錄於 AD-004 並保留 T068；若豁免，修訂 `.specify/memory/constitution.md` 原則 VIII（依 Governance 記錄理由、更新版本與 Last Amended 日期）並在 AD-004 與 `contracts/admin-local-service.md` 移除 `[CONFLICT?]`。**擋住 T067、T068**
 - [x] T003 ✅ 已決定（2026-11-03，AD-009、AD-010）：Python 3.14、Node.js 26、不用 TypeScript、pytest、Node.js 內建測試、Semgrep、pip-audit、npm audit、gitleaks；工具版本於 T001 建 repo 時查詢後確認。副檔名使用 `.js` 與 `.py`
 - [x] T004 ✅ 已決定（2026-11-03）：規則檔與一致性測試案例皆為 JSON，固定詞彙、比對模式限共同子集、金額為整數新台幣；已寫入 `contracts/validator-contract.md` 與 Constitution XIII。固定詞彙清單與共同子集範圍於 T010 定義
 - [ ] T005 ⚠️ DECISION 決定管理員加密資料的演算法與金鑰管理（R-02）；寫入 Constitution VIII 與 AD-005。**擋住 T069、T070、T071**
-- [ ] T006 依 plan.md 建立目錄骨架：`rules/`、`conformance/`、`web/src/{sdk,validator,storage,ui}`、`web/tests/`、`admin/src/{api,validator,credentials,llm,publishing}`、`admin/tests/`、`data/`、`scripts/`
-- [ ] T007 建立單一本機檢查腳本骨架 `scripts/check`（副檔名依 T003 與作業系統），依序呼叫 Python 測試、JavaScript 測試、一致性測試、掃描；檢查規則只有這一份（AD-009）（依 T003、T006）
+- [x] T006 依 plan.md 建立目錄骨架（各目錄以 `.gitkeep` 佔位，`admin/src/ui/` 待 T056）：`rules/`、`conformance/`、`web/src/{sdk,validator,storage,ui}`、`web/tests/`、`admin/src/{api,validator,credentials,llm,publishing}`、`admin/tests/`、`data/`、`scripts/`
+- [x] T007 ✅ 已建立 `scripts/check.py`（PASS／FAIL／SKIP／WARN；`CHECK_STRICT=1` 時 SKIP 視同失敗）與 `requirements-dev.txt`。Semgrep 已隔離於獨立環境（pip-audit 對專案環境通過，見 AD-009）；gitleaks 未安裝、Semgrep 規則集未決定，目前以 SKIP 顯示，CI 的嚴格模式下會失敗，需在 T008／T009 前處理。（原任務：建立單一本機檢查腳本骨架 `scripts/check`（副檔名依 T003 與作業系統），依序呼叫 Python 測試、JavaScript 測試、一致性測試、掃描；檢查規則只有這一份（AD-009）（依 T003、T006））
 - [ ] T008 [P] 設定託管 CI，**只執行** `scripts/check`，不另寫檢查規則（AD-009）（依 T001、T007）
 - [ ] T009 [P] 在 `scripts/check` 中接入 secrets 掃描、相依套件掃描、SAST（依 T003、T007）
 
@@ -69,7 +69,7 @@ description: "Task list for 信用卡消費匯入與通路回饋最佳化"
 
 ### 決定與測試（實作前）
 
-- [ ] T019 [US1] ⚠️ DECISION 定義「貼上的彙整結果」固定格式（欄位、幣別、涵蓋期間表示），寫入新檔 `specs/001-card-reward-optimizer/contracts/paste-format.md`；同時決定 Edge Cases 的 `[TBD]`：重複貼上、退款與分期、預覽中如何發現與修正錯誤數字，寫回 spec.md。**spec 與 contracts 目前沒有此格式，擋住 T020、T024、T025**
+- [x] T019 [US1] ✅ 已決定（2026-11-03）：格式為 JSON、總額、不含回饋率，已寫入 `contracts/paste-format.md`；欄位名稱與三個邊界情況為 `[INFERRED]` 待確認。（原任務：定義「貼上的彙整結果」固定格式（欄位、幣別、涵蓋期間表示），寫入新檔 `specs/001-card-reward-optimizer/contracts/paste-format.md`；同時決定 Edge Cases 的 `[TBD]`：重複貼上、退款與分期、預覽中如何發現與修正錯誤數字，寫回 spec.md。原本擋住 T020、T024、T025，現已解除）
 - [ ] T020 [P] [US1] 建立貼上驗證的一致性案例：格式錯誤、欄位缺漏、數值超出範圍、非新台幣、完整卡號、CVV、可疑網頁語法、單筆大額項目金額未達門檻（預設 10,000 元，單筆判定）、涵蓋期間不足三個月（應提示但允許繼續），於 `conformance/paste-input.*`（FR-025、FR-015、FR-018、FR-040、FR-002；依 T019）
 - [ ] T021 [P] [US1] 測試匯入流程：驗證通過→預覽→使用者確認才寫入；各通路月均與貼上內容 100% 一致；無法歸類金額歸入「無腦刷」；無消費通路為 0 或標示無資料，於 `web/tests/paste-import.test.js`（SC-001；依 T003）
 - [ ] T022 [P] [US1] 測試智慧提問：略過或「不知道」標示為未知且不以預設值填補；來源標示「使用者自述估算」，於 `web/tests/smart-questions.test.js`（FR-023、FR-024）

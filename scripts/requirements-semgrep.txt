@@ -1,0 +1,6 @@
+# Semgrep lives in its own virtual environment (.venv-semgrep) so that its pinned
+# dependencies (mcp==1.29.0, opentelemetry-api~=1.37) stay out of the audited project environment.
+# pip-audit reported known vulnerabilities in those pins on 2026-11-03; no fix is possible without
+# overriding Semgrep's own pins. Re-check when a newer Semgrep is released.
+# Keep this file ASCII-only.
+semgrep==1.183.0

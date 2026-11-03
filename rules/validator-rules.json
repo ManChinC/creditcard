@@ -1,0 +1,43 @@
+{
+  "rulesVersion": "0.1.0-draft",
+  "status": "skeleton (T010). Vocabulary and pattern subset are [INFERRED] and await user confirmation.",
+  "defaultDecision": "deny",
+  "vocabulary": {
+    "checks": {
+      "required": { "params": [], "meaning": "field must be present" },
+      "noUnknownFields": { "params": [], "meaning": "fields not defined by the rule set are rejected (default deny)" },
+      "type": { "params": ["string | integer | array | object"], "meaning": "value must have this type; integer means whole number, no fractions" },
+      "min": { "params": ["integer"], "meaning": "integer value >= param" },
+      "max": { "params": ["integer"], "meaning": "integer value <= param" },
+      "minLength": { "params": ["integer"], "meaning": "string length >= param" },
+      "maxLength": { "params": ["integer"], "meaning": "string length <= param" },
+      "maxItems": { "params": ["integer"], "meaning": "array length <= param" },
+      "enum": { "params": ["list of allowed values"], "meaning": "value must be one of the list" },
+      "pattern": { "params": ["regex within patternSubset"], "meaning": "string must match the pattern" },
+      "refersTo": { "params": ["sibling path"], "meaning": "value must equal one value found at the referenced path in the same document" },
+      "atLeastSetting": { "params": ["setting name"], "meaning": "integer value >= the named user setting (for example the large-item threshold)" },
+      "periodOrder": { "params": ["start path", "end path"], "meaning": "start month is not later than end month" }
+    },
+    "patternSubset": {
+      "allowed": ["literal characters", "character classes [...]", "anchors ^ $", "quantifiers * + ? {m,n}", "alternation |", "non-capturing and capturing groups"],
+      "forbidden": ["lookahead and lookbehind", "backreferences", "named groups", "inline flags", "unicode property escapes", "possessive quantifiers"],
+      "note": "The subset must behave identically in Python and JavaScript; every pattern rule needs conformance cases."
+    },
+    "decisions": ["allow", "deny"],
+    "reasonCodes": "to be listed per rule when rules are written (T024, T039, T065)"
+  },
+  "ruleSets": {
+    "paste-input": {
+      "source": "specs/001-card-reward-optimizer/contracts/paste-format.md",
+      "rules": []
+    },
+    "published-data": {
+      "source": "specs/001-card-reward-optimizer/contracts/published-reward-data.md",
+      "rules": []
+    },
+    "access": {
+      "source": "specs/001-card-reward-optimizer/contracts/sdk-operations.md",
+      "rules": []
+    }
+  }
+}

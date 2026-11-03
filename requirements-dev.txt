@@ -1,0 +1,5 @@
+# Dev and check dependencies (AD-009). Versions queried 2026-11-03; all require Python 3.10+.
+# Keep this file ASCII-only: pip-audit on Windows decodes it with the system code page.
+# Semgrep is NOT listed here: it pins vulnerable dependencies (see scripts/requirements-semgrep.txt).
+pytest==9.2.0
+pip-audit==2.10.1

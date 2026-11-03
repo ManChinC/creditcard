@@ -7,6 +7,8 @@
 admin-data/
 
 # 執行環境產物
+.venv/
+.venv-semgrep/
 __pycache__/
 *.pyc
 .pytest_cache/
