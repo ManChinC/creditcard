@@ -1,0 +1,63 @@
+// Shared record shapes (T018, data-model.md). These factories only build plain objects.
+// Whether a record is acceptable is decided by the Validator (rule sets stored-*), not here.
+// Public mode never stores the last four digits, full card numbers or CVV (FR-015, FR-016):
+// the stored-card rule set is an allow-list, so those fields are rejected as unknown.
+
+export const ISSUERS = Object.freeze(["國泰", "永豐", "富邦", "台新"]);
+export const MAPPING_SOURCES = Object.freeze(["imported", "self-reported"]);
+export const SNAPSHOT_SOURCES = Object.freeze(["llm-paste", "self-reported"]);
+export const CHANNEL_ORIGINS = Object.freeze(["default", "custom"]);
+
+// Large-item threshold: user-configurable, default 10,000, judged per single transaction (FR-027).
+export const DEFAULT_LARGE_ITEM_THRESHOLD = 10000;
+
+// Collection name -> Validator rule set that every record in it must pass.
+export const COLLECTIONS = Object.freeze({
+  cards: "stored-card",
+  channels: "stored-channel",
+  mappings: "stored-mapping",
+  habits: "stored-habit",
+  snapshots: "stored-snapshot",
+  settings: "stored-settings",
+});
+
+export const SETTINGS_ID = "settings";
+
+export function makeCard({ id, issuer, name }) {
+  return { id, issuer, name };
+}
+
+export function makeChannel({ id, name, aliases = [], origin = "custom" }) {
+  return { id, name, aliases: [...aliases], origin };
+}
+
+// One mapping per channel (id = channelId). cardId is omitted when the user does not know the card.
+export function makeMapping({ channelId, cardId, source }) {
+  const m = { id: channelId, channelId, source };
+  if (cardId !== undefined) m.cardId = cardId;
+  return m;
+}
+
+// Smart-question answer. approxMonthly and cardId are omitted for "don't know" or skipped (US1 scenario 8).
+export function makeHabit({ channelId, cardId, approxMonthly }) {
+  const h = { id: channelId, channelId, source: "self-reported" };
+  if (cardId !== undefined) h.cardId = cardId;
+  if (approxMonthly !== undefined) h.approxMonthly = approxMonthly;
+  return h;
+}
+
+// A confirmed summary snapshot. No per-transaction details are ever stored (FR-029).
+export function makeSnapshot({ id, confirmedAt, period, channelTotals, source, largeItems = [] }) {
+  return {
+    id,
+    confirmedAt,
+    period: { start: period.start, end: period.end },
+    channelTotals: channelTotals.map(({ channelId, total }) => ({ channelId, total })),
+    source,
+    largeItems: largeItems.map(({ category, amount }) => ({ category, amount })),
+  };
+}
+
+export function makeSettings({ largeItemThreshold = DEFAULT_LARGE_ITEM_THRESHOLD } = {}) {
+  return { id: SETTINGS_ID, largeItemThreshold };
+}

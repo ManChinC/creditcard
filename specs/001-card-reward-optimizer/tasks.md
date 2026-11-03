@@ -47,15 +47,15 @@ description: "Task list for 信用卡消費匯入與通路回饋最佳化"
 
 **⚠️ CRITICAL**: 此階段完成前不得開始任何 user story
 
-- [ ] T010 建立規則檔骨架，含預設拒絕：未明確允許的請求一律拒絕，於 `rules/`（檔名與格式依 T004）（Constitution XIII、FR-046）
-- [ ] T011 [P] 實作瀏覽器端規則執行器，只讀規則檔，禁止自帶規則，於 `web/src/validator/executor.js`（依 T010）
-- [ ] T012 [P] 實作本機端 Python 規則執行器，只讀規則檔，禁止自帶規則，於 `admin/src/validator/executor.py`（依 T010）
-- [ ] T013 [P] 建立瀏覽器端一致性測試載入器，載入 `conformance/` 同一組案例，於 `web/tests/conformance.test.js`（依 T003、T004）
-- [ ] T014 [P] 建立 Python 一致性測試載入器，載入 `conformance/` 同一組案例，於 `admin/tests/test_conformance.py`（依 T003、T004）
-- [ ] T015 建立預設拒絕的一致性案例（未宣告規則、未知請求皆拒絕），於 `conformance/deny-by-default.*`；兩個載入器皆須通過（依 T011 至 T014）
-- [ ] T016 實作操作存取宣告登錄：每個操作宣告 accessRequirement 與 protectionLevel，未宣告者拒絕，不由呼叫端宣稱，於 `web/src/sdk/access.js`（FR-044、FR-046；依 T011）
-- [ ] T017 [P] 實作瀏覽器儲存模組：僅存非敏感資料（卡名、通路、金額彙整），**公開版 MUST NOT 保存末四碼**，資料不加密，於 `web/src/storage/store.js`（FR-016、AD-003）
-- [ ] T018 [P] 實作共用模型與預設 11 個通路（Card、Channel、ChannelCardMapping、SummarySnapshot、HabitEntry），欄位約束依 data-model.md，於 `web/src/sdk/models.js` 與 `web/src/sdk/default-channels.js`
+- [x] T010 ✅ 詞彙已由使用者確認（2026-11-03）；比對模式子集於 T011／T012 為求兩邊一致而收窄，見 `rules/validator-rules.json`。建立規則檔骨架，含預設拒絕：未明確允許的請求一律拒絕，於 `rules/`（檔名與格式依 T004）（Constitution XIII、FR-046）
+- [x] T011 [P] 實作瀏覽器端規則執行器，只讀規則檔，禁止自帶規則，於 `web/src/validator/executor.js`（依 T010）
+- [x] T012 [P] 實作本機端 Python 規則執行器，只讀規則檔，禁止自帶規則，於 `admin/src/validator/executor.py`（依 T010）
+- [x] T013 [P] 建立瀏覽器端一致性測試載入器，載入 `conformance/` 同一組案例，於 `web/tests/conformance.test.js`（依 T003、T004）
+- [x] T014 [P] 建立 Python 一致性測試載入器，載入 `conformance/` 同一組案例，於 `admin/tests/test_conformance.py`（依 T003、T004）
+- [x] T015 ✅ 另含 `conformance/vocabulary.json`（41 項，涵蓋全部 13 個詞彙與兩邊易不一致的邊界）。建立預設拒絕的一致性案例（未宣告規則、未知請求皆拒絕），於 `conformance/deny-by-default.*`；兩個載入器皆須通過（依 T011 至 T014）
+- [x] T016 ✅ 登錄本身不做允許／拒絕判斷，只宣告並把事實交給 Validator 的 `access` 規則集；該規則集的正式規則留給 T065，在那之前一律預設拒絕。實作操作存取宣告登錄：每個操作宣告 accessRequirement 與 protectionLevel，未宣告者拒絕，不由呼叫端宣稱，於 `web/src/sdk/access.js`（FR-044、FR-046；依 T011）
+- [x] T017 ✅ 每次讀寫都經 Validator 的 `stored-*` 規則集（允許清單，故末四碼、卡號、CVV、逐筆明細都存不進去）；儲存 API 目前用 localStorage，AD-003 未指定，標 `[TBD]`；長度與數量上限為佔位值，spec 未定義。實作瀏覽器儲存模組：僅存非敏感資料（卡名、通路、金額彙整），**公開版 MUST NOT 保存末四碼**，資料不加密，於 `web/src/storage/store.js`（FR-016、AD-003）
+- [x] T018 ✅ 內部 id 與 `catchall`（無腦刷）為助理擬定。實作共用模型與預設 11 個通路（Card、Channel、ChannelCardMapping、SummarySnapshot、HabitEntry），欄位約束依 data-model.md，於 `web/src/sdk/models.js` 與 `web/src/sdk/default-channels.js`
 
 **Checkpoint**: 規則檔、兩個執行器與一致性測試可運作
 
@@ -70,23 +70,23 @@ description: "Task list for 信用卡消費匯入與通路回饋最佳化"
 ### 決定與測試（實作前）
 
 - [x] T019 [US1] ✅ 已決定（2026-11-03）：格式為 JSON、總額、不含回饋率，已寫入 `contracts/paste-format.md`；欄位名稱與三個邊界情況為 `[INFERRED]` 待確認。（原任務：定義「貼上的彙整結果」固定格式（欄位、幣別、涵蓋期間表示），寫入新檔 `specs/001-card-reward-optimizer/contracts/paste-format.md`；同時決定 Edge Cases 的 `[TBD]`：重複貼上、退款與分期、預覽中如何發現與修正錯誤數字，寫回 spec.md。原本擋住 T020、T024、T025，現已解除）
-- [ ] T020 [P] [US1] 建立貼上驗證的一致性案例：格式錯誤、欄位缺漏、數值超出範圍、非新台幣、完整卡號、CVV、可疑網頁語法、單筆大額項目金額未達門檻（預設 10,000 元，單筆判定）、涵蓋期間不足三個月（應提示但允許繼續），於 `conformance/paste-input.*`（FR-025、FR-015、FR-018、FR-040、FR-002；依 T019）
-- [ ] T021 [P] [US1] 測試匯入流程：驗證通過→預覽→使用者確認才寫入；各通路月均與貼上內容 100% 一致；無法歸類金額歸入「無腦刷」；無消費通路為 0 或標示無資料，於 `web/tests/paste-import.test.js`（SC-001；依 T003）
-- [ ] T022 [P] [US1] 測試智慧提問：略過或「不知道」標示為未知且不以預設值填補；來源標示「使用者自述估算」，於 `web/tests/smart-questions.test.js`（FR-023、FR-024）
-- [ ] T023 [P] [US1] 測試儲存隱私：公開版儲存內容不含末四碼、完整卡號、CVV；不含逐筆明細，於 `web/tests/storage-privacy.test.js`（SC-002）
+- [x] T020 [P] [US1] 建立貼上驗證的一致性案例：格式錯誤、欄位缺漏、數值超出範圍、非新台幣、完整卡號、CVV、可疑網頁語法、單筆大額項目金額未達門檻（預設 10,000 元，單筆判定）、涵蓋期間不足三個月（應提示但允許繼續），於 `conformance/paste-input.*`（FR-025、FR-015、FR-018、FR-040、FR-002；依 T019）
+- [x] T021 [P] [US1] 測試匯入流程：驗證通過→預覽→使用者確認才寫入；各通路月均與貼上內容 100% 一致；無法歸類金額歸入「無腦刷」；無消費通路為 0 或標示無資料，於 `web/tests/paste-import.test.js`（SC-001；依 T003）
+- [x] T022 [P] [US1] 測試智慧提問：略過或「不知道」標示為未知且不以預設值填補；來源標示「使用者自述估算」，於 `web/tests/smart-questions.test.js`（FR-023、FR-024）
+- [x] T023 [P] [US1] 測試儲存隱私：公開版儲存內容不含末四碼、完整卡號、CVV；不含逐筆明細，於 `web/tests/storage-privacy.test.js`（SC-002）
 
 ### 實作
 
-- [ ] T024 [US1] 在規則檔加入貼上內容的驗證規則（格式、欄位、數值範圍、新台幣、卡號與 CVV 偵測、可疑內容、大額項目門檻），於 `rules/`（依 T019、T020）
-- [ ] T025 [P] [US1] 建立版本化 prompt 並完整顯示：要求 LLM 僅輸出固定格式、不重複輸出逐筆明細、金額僅以新台幣、單筆達門檻者獨立列出、**不得索取卡號與姓名**；網站須提醒使用者自行遮蔽敏感資訊，並說明交給所選 LLM 後的處理不受本系統控制，於 `web/src/ui/prompt-v1.txt` 與 `web/src/ui/prompt.js`（FR-039、FR-040；依 T019）
-- [ ] T026 [US1] 實作匯入管線：驗證→預覽→確認→寫入，不寫入不完整資料，於 `web/src/sdk/import.js`（FR-001、FR-025；依 T017、T018、T024）
-- [ ] T027 [P] [US1] 實作通路歸類、「無腦刷」、使用者手動調整、自訂通路（名稱與別名），於 `web/src/sdk/channels.js`（FR-004、FR-006、FR-031；依 T018）
-- [ ] T028 [US1] 建立持卡清單與通路 × 卡對照表，標示資料來源（匯入計算／自述估算），於 `web/src/sdk/mapping.js`（FR-003、FR-005、FR-024；依 T026、T027）
-- [ ] T029 [P] [US1] 實作智慧提問：依通路逐題，可略過，於 `web/src/sdk/smart-questions.js`（FR-023、SC-009；依 T018）
-- [ ] T030 [US1] 實作彙整表快照保存：記錄確認日期，三年期限自確認日起算；不保存逐筆明細；大額項目僅含類別與金額，於 `web/src/sdk/snapshot.js`（FR-029、FR-027；依 T026）
-- [ ] T031 [US1] 實作備份匯出（不加密，匯出前提示明文）、一鍵清除、完整刪除，於 `web/src/storage/backup.js`（FR-017、FR-050；依 T017）
-- [ ] T032 [US1] 建立貼上與智慧提問的畫面，於 `web/src/ui/import-page.js`（依 T025、T026、T029）
-- [ ] T033 [P] [US1] 建立資料保存風險告知（未加密、同瀏覽器可讀、清除會遺失）與安全渲染：貼上內容一律當文字顯示，不以網頁語法渲染，於 `web/src/ui/risk-notice.js` 與 `web/src/ui/render.js`（FR-050、FR-018）
+- [x] T024 [US1] ✅ 另新增兩個檢查 `noCardNumber`（13 位以上連續數字，容許單一空格或連字號）與 `plainText`（拒絕 `<`、`>` 與控制字元），因為比對模式為求兩邊一致已禁用否定與非 ASCII，無法表達；兩個執行器與 `conformance/text-checks.json` 同步更新。 在規則檔加入貼上內容的驗證規則（格式、欄位、數值範圍、新台幣、卡號與 CVV 偵測、可疑內容、大額項目門檻），於 `rules/`（依 T019、T020）
+- [x] T025 [P] [US1] ✅ prompt 以 JavaScript 常數實作（`web/src/ui/prompt.js`），沒有另設 `.txt`，才能在 Node 測試；prompt 內的範例由測試對照真實的 `paste-input` 規則，避免格式漂移。 建立版本化 prompt 並完整顯示：要求 LLM 僅輸出固定格式、不重複輸出逐筆明細、金額僅以新台幣、單筆達門檻者獨立列出、**不得索取卡號與姓名**；網站須提醒使用者自行遮蔽敏感資訊，並說明交給所選 LLM 後的處理不受本系統控制，於 `web/src/ui/prompt-v1.txt` 與 `web/src/ui/prompt.js`（FR-039、FR-040；依 T019）
+- [x] T026 [US1] 實作匯入管線：驗證→預覽→確認→寫入，不寫入不完整資料，於 `web/src/sdk/import.js`（FR-001、FR-025；依 T017、T018、T024）
+- [x] T027 [P] [US1] 實作通路歸類、「無腦刷」、使用者手動調整、自訂通路（名稱與別名），於 `web/src/sdk/channels.js`（FR-004、FR-006、FR-031；依 T018）
+- [x] T028 [US1] 建立持卡清單與通路 × 卡對照表，標示資料來源（匯入計算／自述估算），於 `web/src/sdk/mapping.js`（FR-003、FR-005、FR-024；依 T026、T027）
+- [x] T029 [P] [US1] 實作智慧提問：依通路逐題，可略過，於 `web/src/sdk/smart-questions.js`（FR-023、SC-009；依 T018）
+- [x] T030 [US1] 實作彙整表快照保存：記錄確認日期，三年期限自確認日起算；不保存逐筆明細；大額項目僅含類別與金額，於 `web/src/sdk/snapshot.js`（FR-029、FR-027；依 T026）
+- [x] T031 [US1] 實作備份匯出（不加密，匯出前提示明文）、一鍵清除、完整刪除，於 `web/src/storage/backup.js`（FR-017、FR-050；依 T017）
+- [x] T032 [US1] ⚠️ 尚未在真實瀏覽器驗證（邏輯已由 `web/tests` 涵蓋，畫面只是接線）；另建 `web/index.html` 與 `web/src/main.js`。發布時必須把 `rules/validator-rules.json` 放到與 `index.html` 同一層（T085）。 建立貼上與智慧提問的畫面，於 `web/src/ui/import-page.js`（依 T025、T026、T029）
+- [x] T033 [P] [US1] ✅ 以 `web/tests/ui-safety.test.js` 靜態掃描所有網頁原始碼，禁止會把文字當標記或程式碼的 API，並限制除載入規則檔外不得有任何網路請求。 建立資料保存風險告知（未加密、同瀏覽器可讀、清除會遺失）與安全渲染：貼上內容一律當文字顯示，不以網頁語法渲染，於 `web/src/ui/risk-notice.js` 與 `web/src/ui/render.js`（FR-050、FR-018）
 
 **Checkpoint**: User Story 1 可獨立運作與測試（MVP）
 
@@ -170,7 +170,7 @@ description: "Task list for 信用卡消費匯入與通路回饋最佳化"
 
 ### 實作
 
-- [ ] T065 [US5] 在規則檔加入存取檢查規則，於 `rules/`（依 T060）
+- [ ] T065 [US5] （瀏覽器部分 `access-public` 已於 2026-11-03 提前完成，剩 `access-admin`）在規則檔加入存取檢查規則，於 `rules/`（依 T060）
 - [ ] T066 [P] [US5] 實作不含個人資料的拒絕紀錄，錯誤回應不洩漏內部細節，於 `admin/src/api/deny_log.py`（FR-046）
 - [ ] T067 [US5] 實作本機網頁服務：只綁定本機位址、來源檢查、一次性令牌、存取宣告檢查，於 `admin/src/api/server.py`（FR-041、FR-044、FR-045；依 T002、T012、T016、T061、T065、T066）
 - [ ] T068 [US5] 依 T002 的結果實作本機連線 TLS；若 T002 決定豁免，標記本任務為不適用，於 `admin/src/api/tls.py`（Constitution VIII）

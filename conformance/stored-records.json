@@ -1,0 +1,820 @@
+{
+ "rules": "rules/validator-rules.json",
+ "cases": [
+  {
+   "id": "card-valid",
+   "ruleSet": "stored-card",
+   "input": {
+    "id": "cathay-cube",
+    "issuer": "國泰",
+    "name": "CUBE 卡"
+   },
+   "settings": {},
+   "expect": {
+    "decision": "allow",
+    "failures": []
+   }
+  },
+  {
+   "id": "card-last4-rejected",
+   "ruleSet": "stored-card",
+   "input": {
+    "id": "cathay-cube",
+    "issuer": "國泰",
+    "name": "CUBE 卡",
+    "last4": "1234"
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "known-fields",
+      "path": "",
+      "code": "UNKNOWN_FIELD"
+     }
+    ]
+   }
+  },
+  {
+   "id": "card-number-rejected",
+   "ruleSet": "stored-card",
+   "input": {
+    "id": "cathay-cube",
+    "issuer": "國泰",
+    "name": "CUBE 卡",
+    "cardNumber": "4111111111111111"
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "known-fields",
+      "path": "",
+      "code": "UNKNOWN_FIELD"
+     }
+    ]
+   }
+  },
+  {
+   "id": "card-cvv-rejected",
+   "ruleSet": "stored-card",
+   "input": {
+    "id": "cathay-cube",
+    "issuer": "國泰",
+    "name": "CUBE 卡",
+    "cvv": "123"
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "known-fields",
+      "path": "",
+      "code": "UNKNOWN_FIELD"
+     }
+    ]
+   }
+  },
+  {
+   "id": "card-issuer-not-supported",
+   "ruleSet": "stored-card",
+   "input": {
+    "id": "cathay-cube",
+    "issuer": "其他銀行",
+    "name": "CUBE 卡"
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "issuer",
+      "path": "issuer",
+      "code": "ISSUER_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "card-id-with-space",
+   "ruleSet": "stored-card",
+   "input": {
+    "id": "bad id",
+    "issuer": "國泰",
+    "name": "CUBE 卡"
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "id",
+      "path": "id",
+      "code": "ID_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "card-name-empty",
+   "ruleSet": "stored-card",
+   "input": {
+    "id": "cathay-cube",
+    "issuer": "國泰",
+    "name": ""
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "name",
+      "path": "name",
+      "code": "NAME_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "card-id-proto-name-allowed-as-plain-id",
+   "ruleSet": "stored-card",
+   "input": {
+    "id": "__proto__",
+    "issuer": "國泰",
+    "name": "CUBE 卡"
+   },
+   "settings": {},
+   "expect": {
+    "decision": "allow",
+    "failures": []
+   }
+  },
+  {
+   "id": "channel-valid",
+   "ruleSet": "stored-channel",
+   "input": {
+    "id": "fuel",
+    "name": "加油",
+    "aliases": [],
+    "origin": "default"
+   },
+   "settings": {},
+   "expect": {
+    "decision": "allow",
+    "failures": []
+   }
+  },
+  {
+   "id": "channel-aliases-valid",
+   "ruleSet": "stored-channel",
+   "input": {
+    "id": "fuel",
+    "name": "加油",
+    "aliases": [
+     "中油",
+     "台塑"
+    ],
+    "origin": "custom"
+   },
+   "settings": {},
+   "expect": {
+    "decision": "allow",
+    "failures": []
+   }
+  },
+  {
+   "id": "channel-alias-empty",
+   "ruleSet": "stored-channel",
+   "input": {
+    "id": "fuel",
+    "name": "加油",
+    "aliases": [
+     ""
+    ],
+    "origin": "default"
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "alias-item",
+      "path": "aliases[0]",
+      "code": "ALIASES_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "channel-origin-unknown",
+   "ruleSet": "stored-channel",
+   "input": {
+    "id": "fuel",
+    "name": "加油",
+    "aliases": [],
+    "origin": "builtin"
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "origin",
+      "path": "origin",
+      "code": "ORIGIN_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "channel-aliases-not-array",
+   "ruleSet": "stored-channel",
+   "input": {
+    "id": "fuel",
+    "name": "加油",
+    "aliases": "x",
+    "origin": "default"
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "aliases",
+      "path": "aliases",
+      "code": "ALIASES_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "mapping-valid",
+   "ruleSet": "stored-mapping",
+   "input": {
+    "id": "fuel",
+    "channelId": "fuel",
+    "cardId": "cathay-cube",
+    "source": "imported"
+   },
+   "settings": {},
+   "expect": {
+    "decision": "allow",
+    "failures": []
+   }
+  },
+  {
+   "id": "mapping-unknown-card-allowed",
+   "ruleSet": "stored-mapping",
+   "input": {
+    "id": "fuel",
+    "channelId": "fuel",
+    "source": "imported"
+   },
+   "settings": {},
+   "expect": {
+    "decision": "allow",
+    "failures": []
+   }
+  },
+  {
+   "id": "mapping-source-invalid",
+   "ruleSet": "stored-mapping",
+   "input": {
+    "id": "fuel",
+    "channelId": "fuel",
+    "cardId": "cathay-cube",
+    "source": "guess"
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "source",
+      "path": "source",
+      "code": "SOURCE_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "habit-valid",
+   "ruleSet": "stored-habit",
+   "input": {
+    "id": "fuel",
+    "channelId": "fuel",
+    "cardId": "cathay-cube",
+    "approxMonthly": 1200,
+    "source": "self-reported"
+   },
+   "settings": {},
+   "expect": {
+    "decision": "allow",
+    "failures": []
+   }
+  },
+  {
+   "id": "habit-dont-know-allowed",
+   "ruleSet": "stored-habit",
+   "input": {
+    "id": "fuel",
+    "channelId": "fuel",
+    "source": "self-reported"
+   },
+   "settings": {},
+   "expect": {
+    "decision": "allow",
+    "failures": []
+   }
+  },
+  {
+   "id": "habit-negative-amount",
+   "ruleSet": "stored-habit",
+   "input": {
+    "id": "fuel",
+    "channelId": "fuel",
+    "cardId": "cathay-cube",
+    "approxMonthly": -1,
+    "source": "self-reported"
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "monthly",
+      "path": "approxMonthly",
+      "code": "AMOUNT_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "habit-fractional-amount",
+   "ruleSet": "stored-habit",
+   "input": {
+    "id": "fuel",
+    "channelId": "fuel",
+    "cardId": "cathay-cube",
+    "approxMonthly": 12.5,
+    "source": "self-reported"
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "monthly",
+      "path": "approxMonthly",
+      "code": "AMOUNT_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "snapshot-valid",
+   "ruleSet": "stored-snapshot",
+   "input": {
+    "id": "snap-2026-11",
+    "confirmedAt": "2026-11-03",
+    "period": {
+     "start": "2026-08",
+     "end": "2026-10"
+    },
+    "channelTotals": [
+     {
+      "channelId": "fuel",
+      "total": 3600
+     },
+     {
+      "channelId": "dining",
+      "total": 21000
+     }
+    ],
+    "source": "llm-paste",
+    "largeItems": [
+     {
+      "category": "旅遊訂房 / 機票",
+      "amount": 45000
+     }
+    ]
+   },
+   "settings": {},
+   "expect": {
+    "decision": "allow",
+    "failures": []
+   }
+  },
+  {
+   "id": "snapshot-no-large-items-valid",
+   "ruleSet": "stored-snapshot",
+   "input": {
+    "id": "snap-2026-11",
+    "confirmedAt": "2026-11-03",
+    "period": {
+     "start": "2026-08",
+     "end": "2026-10"
+    },
+    "channelTotals": [
+     {
+      "channelId": "fuel",
+      "total": 3600
+     },
+     {
+      "channelId": "dining",
+      "total": 21000
+     }
+    ],
+    "source": "llm-paste",
+    "largeItems": []
+   },
+   "settings": {},
+   "expect": {
+    "decision": "allow",
+    "failures": []
+   }
+  },
+  {
+   "id": "snapshot-bad-date",
+   "ruleSet": "stored-snapshot",
+   "input": {
+    "id": "snap-2026-11",
+    "confirmedAt": "2026-13-01",
+    "period": {
+     "start": "2026-08",
+     "end": "2026-10"
+    },
+    "channelTotals": [
+     {
+      "channelId": "fuel",
+      "total": 3600
+     },
+     {
+      "channelId": "dining",
+      "total": 21000
+     }
+    ],
+    "source": "llm-paste",
+    "largeItems": [
+     {
+      "category": "旅遊訂房 / 機票",
+      "amount": 45000
+     }
+    ]
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "confirmed",
+      "path": "confirmedAt",
+      "code": "DATE_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "snapshot-period-reversed",
+   "ruleSet": "stored-snapshot",
+   "input": {
+    "id": "snap-2026-11",
+    "confirmedAt": "2026-11-03",
+    "period": {
+     "start": "2026-10",
+     "end": "2026-08"
+    },
+    "channelTotals": [
+     {
+      "channelId": "fuel",
+      "total": 3600
+     },
+     {
+      "channelId": "dining",
+      "total": 21000
+     }
+    ],
+    "source": "llm-paste",
+    "largeItems": [
+     {
+      "category": "旅遊訂房 / 機票",
+      "amount": 45000
+     }
+    ]
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "period",
+      "path": "period",
+      "code": "PERIOD_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "snapshot-negative-total",
+   "ruleSet": "stored-snapshot",
+   "input": {
+    "id": "snap-2026-11",
+    "confirmedAt": "2026-11-03",
+    "period": {
+     "start": "2026-08",
+     "end": "2026-10"
+    },
+    "channelTotals": [
+     {
+      "channelId": "fuel",
+      "total": 3600
+     },
+     {
+      "channelId": "dining",
+      "total": -5
+     }
+    ],
+    "source": "llm-paste",
+    "largeItems": [
+     {
+      "category": "旅遊訂房 / 機票",
+      "amount": 45000
+     }
+    ]
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "totals-amount",
+      "path": "channelTotals[1].total",
+      "code": "AMOUNT_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "snapshot-transaction-detail-rejected",
+   "ruleSet": "stored-snapshot",
+   "input": {
+    "id": "snap-2026-11",
+    "confirmedAt": "2026-11-03",
+    "period": {
+     "start": "2026-08",
+     "end": "2026-10"
+    },
+    "channelTotals": [
+     {
+      "channelId": "fuel",
+      "total": 3600,
+      "merchant": "某加油站"
+     },
+     {
+      "channelId": "dining",
+      "total": 21000
+     }
+    ],
+    "source": "llm-paste",
+    "largeItems": [
+     {
+      "category": "旅遊訂房 / 機票",
+      "amount": 45000
+     }
+    ]
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "totals-item",
+      "path": "channelTotals[0]",
+      "code": "UNKNOWN_FIELD"
+     }
+    ]
+   }
+  },
+  {
+   "id": "snapshot-transactions-field-rejected",
+   "ruleSet": "stored-snapshot",
+   "input": {
+    "id": "snap-2026-11",
+    "confirmedAt": "2026-11-03",
+    "period": {
+     "start": "2026-08",
+     "end": "2026-10"
+    },
+    "channelTotals": [
+     {
+      "channelId": "fuel",
+      "total": 3600
+     },
+     {
+      "channelId": "dining",
+      "total": 21000
+     }
+    ],
+    "source": "llm-paste",
+    "largeItems": [
+     {
+      "category": "旅遊訂房 / 機票",
+      "amount": 45000
+     }
+    ],
+    "transactions": [
+     {
+      "merchant": "x",
+      "amount": 5
+     }
+    ]
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "known-fields",
+      "path": "",
+      "code": "UNKNOWN_FIELD"
+     }
+    ]
+   }
+  },
+  {
+   "id": "snapshot-large-item-zero",
+   "ruleSet": "stored-snapshot",
+   "input": {
+    "id": "snap-2026-11",
+    "confirmedAt": "2026-11-03",
+    "period": {
+     "start": "2026-08",
+     "end": "2026-10"
+    },
+    "channelTotals": [
+     {
+      "channelId": "fuel",
+      "total": 3600
+     },
+     {
+      "channelId": "dining",
+      "total": 21000
+     }
+    ],
+    "source": "llm-paste",
+    "largeItems": [
+     {
+      "category": "旅遊訂房 / 機票",
+      "amount": 0
+     }
+    ]
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "large-amount",
+      "path": "largeItems[0].amount",
+      "code": "AMOUNT_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "snapshot-large-item-merchant-rejected",
+   "ruleSet": "stored-snapshot",
+   "input": {
+    "id": "snap-2026-11",
+    "confirmedAt": "2026-11-03",
+    "period": {
+     "start": "2026-08",
+     "end": "2026-10"
+    },
+    "channelTotals": [
+     {
+      "channelId": "fuel",
+      "total": 3600
+     },
+     {
+      "channelId": "dining",
+      "total": 21000
+     }
+    ],
+    "source": "llm-paste",
+    "largeItems": [
+     {
+      "category": "旅遊訂房 / 機票",
+      "amount": 45000,
+      "merchant": "某旅行社"
+     }
+    ]
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "large-item",
+      "path": "largeItems[0]",
+      "code": "UNKNOWN_FIELD"
+     }
+    ]
+   }
+  },
+  {
+   "id": "snapshot-source-invalid",
+   "ruleSet": "stored-snapshot",
+   "input": {
+    "id": "snap-2026-11",
+    "confirmedAt": "2026-11-03",
+    "period": {
+     "start": "2026-08",
+     "end": "2026-10"
+    },
+    "channelTotals": [
+     {
+      "channelId": "fuel",
+      "total": 3600
+     },
+     {
+      "channelId": "dining",
+      "total": 21000
+     }
+    ],
+    "source": "pdf",
+    "largeItems": [
+     {
+      "category": "旅遊訂房 / 機票",
+      "amount": 45000
+     }
+    ]
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "source",
+      "path": "source",
+      "code": "SOURCE_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "settings-valid",
+   "ruleSet": "stored-settings",
+   "input": {
+    "id": "settings",
+    "largeItemThreshold": 10000
+   },
+   "settings": {},
+   "expect": {
+    "decision": "allow",
+    "failures": []
+   }
+  },
+  {
+   "id": "settings-zero-threshold",
+   "ruleSet": "stored-settings",
+   "input": {
+    "id": "settings",
+    "largeItemThreshold": 0
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "threshold",
+      "path": "largeItemThreshold",
+      "code": "THRESHOLD_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "settings-wrong-id",
+   "ruleSet": "stored-settings",
+   "input": {
+    "id": "other",
+    "largeItemThreshold": 10000
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "id",
+      "path": "id",
+      "code": "ID_INVALID"
+     }
+    ]
+   }
+  }
+ ]
+}

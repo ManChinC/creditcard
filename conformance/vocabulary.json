@@ -1,0 +1,1547 @@
+{
+ "rules": "conformance/fixtures/test-rules.json",
+ "cases": [
+  {
+   "id": "allow-valid",
+   "ruleSet": "vocab-demo",
+   "input": {
+    "name": "abc",
+    "count": 5,
+    "kind": "a",
+    "code": "AB12",
+    "items": [
+     {
+      "n": 1,
+      "label": "x"
+     },
+     {
+      "n": 2,
+      "label": "y"
+     }
+    ],
+    "ref": "x",
+    "period": {
+     "start": "2026-01",
+     "end": "2026-03"
+    },
+    "amount": 10000
+   },
+   "settings": {
+    "threshold": 10000
+   },
+   "expect": {
+    "decision": "allow",
+    "failures": []
+   }
+  },
+  {
+   "id": "name-missing",
+   "ruleSet": "vocab-demo",
+   "input": {
+    "count": 5,
+    "kind": "a",
+    "code": "AB12",
+    "items": [
+     {
+      "n": 1,
+      "label": "x"
+     },
+     {
+      "n": 2,
+      "label": "y"
+     }
+    ],
+    "ref": "x",
+    "period": {
+     "start": "2026-01",
+     "end": "2026-03"
+    },
+    "amount": 10000
+   },
+   "settings": {
+    "threshold": 10000
+   },
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "name",
+      "path": "name",
+      "code": "NAME_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "name-too-short",
+   "ruleSet": "vocab-demo",
+   "input": {
+    "name": "a",
+    "count": 5,
+    "kind": "a",
+    "code": "AB12",
+    "items": [
+     {
+      "n": 1,
+      "label": "x"
+     },
+     {
+      "n": 2,
+      "label": "y"
+     }
+    ],
+    "ref": "x",
+    "period": {
+     "start": "2026-01",
+     "end": "2026-03"
+    },
+    "amount": 10000
+   },
+   "settings": {
+    "threshold": 10000
+   },
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "name",
+      "path": "name",
+      "code": "NAME_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "name-4-codepoints-astral-allowed",
+   "ruleSet": "vocab-demo",
+   "input": {
+    "name": "😀😀😀😀",
+    "count": 5,
+    "kind": "a",
+    "code": "AB12",
+    "items": [
+     {
+      "n": 1,
+      "label": "x"
+     },
+     {
+      "n": 2,
+      "label": "y"
+     }
+    ],
+    "ref": "x",
+    "period": {
+     "start": "2026-01",
+     "end": "2026-03"
+    },
+    "amount": 10000
+   },
+   "settings": {
+    "threshold": 10000
+   },
+   "expect": {
+    "decision": "allow",
+    "failures": []
+   }
+  },
+  {
+   "id": "name-5-codepoints-astral-denied",
+   "ruleSet": "vocab-demo",
+   "input": {
+    "name": "😀😀😀😀😀",
+    "count": 5,
+    "kind": "a",
+    "code": "AB12",
+    "items": [
+     {
+      "n": 1,
+      "label": "x"
+     },
+     {
+      "n": 2,
+      "label": "y"
+     }
+    ],
+    "ref": "x",
+    "period": {
+     "start": "2026-01",
+     "end": "2026-03"
+    },
+    "amount": 10000
+   },
+   "settings": {
+    "threshold": 10000
+   },
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "name",
+      "path": "name",
+      "code": "NAME_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "count-whole-float-allowed",
+   "ruleSet": "vocab-demo",
+   "input": {
+    "name": "abc",
+    "count": 5.0,
+    "kind": "a",
+    "code": "AB12",
+    "items": [
+     {
+      "n": 1,
+      "label": "x"
+     },
+     {
+      "n": 2,
+      "label": "y"
+     }
+    ],
+    "ref": "x",
+    "period": {
+     "start": "2026-01",
+     "end": "2026-03"
+    },
+    "amount": 10000
+   },
+   "settings": {
+    "threshold": 10000
+   },
+   "expect": {
+    "decision": "allow",
+    "failures": []
+   }
+  },
+  {
+   "id": "count-fractional",
+   "ruleSet": "vocab-demo",
+   "input": {
+    "name": "abc",
+    "count": 1.5,
+    "kind": "a",
+    "code": "AB12",
+    "items": [
+     {
+      "n": 1,
+      "label": "x"
+     },
+     {
+      "n": 2,
+      "label": "y"
+     }
+    ],
+    "ref": "x",
+    "period": {
+     "start": "2026-01",
+     "end": "2026-03"
+    },
+    "amount": 10000
+   },
+   "settings": {
+    "threshold": 10000
+   },
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "count",
+      "path": "count",
+      "code": "COUNT_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "count-boolean",
+   "ruleSet": "vocab-demo",
+   "input": {
+    "name": "abc",
+    "count": true,
+    "kind": "a",
+    "code": "AB12",
+    "items": [
+     {
+      "n": 1,
+      "label": "x"
+     },
+     {
+      "n": 2,
+      "label": "y"
+     }
+    ],
+    "ref": "x",
+    "period": {
+     "start": "2026-01",
+     "end": "2026-03"
+    },
+    "amount": 10000
+   },
+   "settings": {
+    "threshold": 10000
+   },
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "count",
+      "path": "count",
+      "code": "COUNT_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "count-string",
+   "ruleSet": "vocab-demo",
+   "input": {
+    "name": "abc",
+    "count": "5",
+    "kind": "a",
+    "code": "AB12",
+    "items": [
+     {
+      "n": 1,
+      "label": "x"
+     },
+     {
+      "n": 2,
+      "label": "y"
+     }
+    ],
+    "ref": "x",
+    "period": {
+     "start": "2026-01",
+     "end": "2026-03"
+    },
+    "amount": 10000
+   },
+   "settings": {
+    "threshold": 10000
+   },
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "count",
+      "path": "count",
+      "code": "COUNT_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "count-null",
+   "ruleSet": "vocab-demo",
+   "input": {
+    "name": "abc",
+    "count": null,
+    "kind": "a",
+    "code": "AB12",
+    "items": [
+     {
+      "n": 1,
+      "label": "x"
+     },
+     {
+      "n": 2,
+      "label": "y"
+     }
+    ],
+    "ref": "x",
+    "period": {
+     "start": "2026-01",
+     "end": "2026-03"
+    },
+    "amount": 10000
+   },
+   "settings": {
+    "threshold": 10000
+   },
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "count",
+      "path": "count",
+      "code": "COUNT_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "count-above-max",
+   "ruleSet": "vocab-demo",
+   "input": {
+    "name": "abc",
+    "count": 101,
+    "kind": "a",
+    "code": "AB12",
+    "items": [
+     {
+      "n": 1,
+      "label": "x"
+     },
+     {
+      "n": 2,
+      "label": "y"
+     }
+    ],
+    "ref": "x",
+    "period": {
+     "start": "2026-01",
+     "end": "2026-03"
+    },
+    "amount": 10000
+   },
+   "settings": {
+    "threshold": 10000
+   },
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "count",
+      "path": "count",
+      "code": "COUNT_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "count-below-min",
+   "ruleSet": "vocab-demo",
+   "input": {
+    "name": "abc",
+    "count": -1,
+    "kind": "a",
+    "code": "AB12",
+    "items": [
+     {
+      "n": 1,
+      "label": "x"
+     },
+     {
+      "n": 2,
+      "label": "y"
+     }
+    ],
+    "ref": "x",
+    "period": {
+     "start": "2026-01",
+     "end": "2026-03"
+    },
+    "amount": 10000
+   },
+   "settings": {
+    "threshold": 10000
+   },
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "count",
+      "path": "count",
+      "code": "COUNT_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "count-unsafe-integer",
+   "ruleSet": "vocab-demo",
+   "input": {
+    "name": "abc",
+    "count": 9007199254740993,
+    "kind": "a",
+    "code": "AB12",
+    "items": [
+     {
+      "n": 1,
+      "label": "x"
+     },
+     {
+      "n": 2,
+      "label": "y"
+     }
+    ],
+    "ref": "x",
+    "period": {
+     "start": "2026-01",
+     "end": "2026-03"
+    },
+    "amount": 10000
+   },
+   "settings": {
+    "threshold": 10000
+   },
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "count",
+      "path": "count",
+      "code": "COUNT_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "kind-true-allowed",
+   "ruleSet": "vocab-demo",
+   "input": {
+    "name": "abc",
+    "count": 5,
+    "kind": true,
+    "code": "AB12",
+    "items": [
+     {
+      "n": 1,
+      "label": "x"
+     },
+     {
+      "n": 2,
+      "label": "y"
+     }
+    ],
+    "ref": "x",
+    "period": {
+     "start": "2026-01",
+     "end": "2026-03"
+    },
+    "amount": 10000
+   },
+   "settings": {
+    "threshold": 10000
+   },
+   "expect": {
+    "decision": "allow",
+    "failures": []
+   }
+  },
+  {
+   "id": "kind-one-allowed",
+   "ruleSet": "vocab-demo",
+   "input": {
+    "name": "abc",
+    "count": 5,
+    "kind": 1,
+    "code": "AB12",
+    "items": [
+     {
+      "n": 1,
+      "label": "x"
+     },
+     {
+      "n": 2,
+      "label": "y"
+     }
+    ],
+    "ref": "x",
+    "period": {
+     "start": "2026-01",
+     "end": "2026-03"
+    },
+    "amount": 10000
+   },
+   "settings": {
+    "threshold": 10000
+   },
+   "expect": {
+    "decision": "allow",
+    "failures": []
+   }
+  },
+  {
+   "id": "kind-false-denied",
+   "ruleSet": "vocab-demo",
+   "input": {
+    "name": "abc",
+    "count": 5,
+    "kind": false,
+    "code": "AB12",
+    "items": [
+     {
+      "n": 1,
+      "label": "x"
+     },
+     {
+      "n": 2,
+      "label": "y"
+     }
+    ],
+    "ref": "x",
+    "period": {
+     "start": "2026-01",
+     "end": "2026-03"
+    },
+    "amount": 10000
+   },
+   "settings": {
+    "threshold": 10000
+   },
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "kind",
+      "path": "kind",
+      "code": "KIND_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "kind-string-true-denied",
+   "ruleSet": "vocab-demo",
+   "input": {
+    "name": "abc",
+    "count": 5,
+    "kind": "true",
+    "code": "AB12",
+    "items": [
+     {
+      "n": 1,
+      "label": "x"
+     },
+     {
+      "n": 2,
+      "label": "y"
+     }
+    ],
+    "ref": "x",
+    "period": {
+     "start": "2026-01",
+     "end": "2026-03"
+    },
+    "amount": 10000
+   },
+   "settings": {
+    "threshold": 10000
+   },
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "kind",
+      "path": "kind",
+      "code": "KIND_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "kind-other",
+   "ruleSet": "vocab-demo",
+   "input": {
+    "name": "abc",
+    "count": 5,
+    "kind": 2,
+    "code": "AB12",
+    "items": [
+     {
+      "n": 1,
+      "label": "x"
+     },
+     {
+      "n": 2,
+      "label": "y"
+     }
+    ],
+    "ref": "x",
+    "period": {
+     "start": "2026-01",
+     "end": "2026-03"
+    },
+    "amount": 10000
+   },
+   "settings": {
+    "threshold": 10000
+   },
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "kind",
+      "path": "kind",
+      "code": "KIND_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "code-lowercase",
+   "ruleSet": "vocab-demo",
+   "input": {
+    "name": "abc",
+    "count": 5,
+    "kind": "a",
+    "code": "ab12",
+    "items": [
+     {
+      "n": 1,
+      "label": "x"
+     },
+     {
+      "n": 2,
+      "label": "y"
+     }
+    ],
+    "ref": "x",
+    "period": {
+     "start": "2026-01",
+     "end": "2026-03"
+    },
+    "amount": 10000
+   },
+   "settings": {
+    "threshold": 10000
+   },
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "code",
+      "path": "code",
+      "code": "CODE_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "code-trailing-newline",
+   "ruleSet": "vocab-demo",
+   "input": {
+    "name": "abc",
+    "count": 5,
+    "kind": "a",
+    "code": "AB12\n",
+    "items": [
+     {
+      "n": 1,
+      "label": "x"
+     },
+     {
+      "n": 2,
+      "label": "y"
+     }
+    ],
+    "ref": "x",
+    "period": {
+     "start": "2026-01",
+     "end": "2026-03"
+    },
+    "amount": 10000
+   },
+   "settings": {
+    "threshold": 10000
+   },
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "code",
+      "path": "code",
+      "code": "CODE_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "code-non-ascii-digits",
+   "ruleSet": "vocab-demo",
+   "input": {
+    "name": "abc",
+    "count": 5,
+    "kind": "a",
+    "code": "AB١٢",
+    "items": [
+     {
+      "n": 1,
+      "label": "x"
+     },
+     {
+      "n": 2,
+      "label": "y"
+     }
+    ],
+    "ref": "x",
+    "period": {
+     "start": "2026-01",
+     "end": "2026-03"
+    },
+    "amount": 10000
+   },
+   "settings": {
+    "threshold": 10000
+   },
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "code",
+      "path": "code",
+      "code": "CODE_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "items-too-many",
+   "ruleSet": "vocab-demo",
+   "input": {
+    "name": "abc",
+    "count": 5,
+    "kind": "a",
+    "code": "AB12",
+    "items": [
+     {
+      "n": 1,
+      "label": "x"
+     },
+     {
+      "n": 1,
+      "label": "x"
+     },
+     {
+      "n": 1,
+      "label": "x"
+     },
+     {
+      "n": 1,
+      "label": "x"
+     }
+    ],
+    "ref": "x",
+    "period": {
+     "start": "2026-01",
+     "end": "2026-03"
+    },
+    "amount": 10000
+   },
+   "settings": {
+    "threshold": 10000
+   },
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "items-size",
+      "path": "items",
+      "code": "ITEMS_TOO_MANY"
+     }
+    ]
+   }
+  },
+  {
+   "id": "item-n-below-min",
+   "ruleSet": "vocab-demo",
+   "input": {
+    "name": "abc",
+    "count": 5,
+    "kind": "a",
+    "code": "AB12",
+    "items": [
+     {
+      "n": 1,
+      "label": "x"
+     },
+     {
+      "n": 0,
+      "label": "y"
+     }
+    ],
+    "ref": "x",
+    "period": {
+     "start": "2026-01",
+     "end": "2026-03"
+    },
+    "amount": 10000
+   },
+   "settings": {
+    "threshold": 10000
+   },
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "item-n",
+      "path": "items[1].n",
+      "code": "ITEM_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "item-n-missing",
+   "ruleSet": "vocab-demo",
+   "input": {
+    "name": "abc",
+    "count": 5,
+    "kind": "a",
+    "code": "AB12",
+    "items": [
+     {
+      "label": "x"
+     },
+     {
+      "n": 2,
+      "label": "y"
+     }
+    ],
+    "ref": "x",
+    "period": {
+     "start": "2026-01",
+     "end": "2026-03"
+    },
+    "amount": 10000
+   },
+   "settings": {
+    "threshold": 10000
+   },
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "item-n",
+      "path": "items[0].n",
+      "code": "ITEM_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "items-missing",
+   "ruleSet": "vocab-demo",
+   "input": {
+    "name": "abc",
+    "count": 5,
+    "kind": "a",
+    "code": "AB12",
+    "ref": "x",
+    "period": {
+     "start": "2026-01",
+     "end": "2026-03"
+    },
+    "amount": 10000
+   },
+   "settings": {
+    "threshold": 10000
+   },
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "items-size",
+      "path": "items",
+      "code": "ITEMS_TOO_MANY"
+     },
+     {
+      "rule": "item-n",
+      "path": "items.n",
+      "code": "ITEM_INVALID"
+     },
+     {
+      "rule": "ref",
+      "path": "ref",
+      "code": "REF_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "ref-not-found",
+   "ruleSet": "vocab-demo",
+   "input": {
+    "name": "abc",
+    "count": 5,
+    "kind": "a",
+    "code": "AB12",
+    "items": [
+     {
+      "n": 1,
+      "label": "x"
+     },
+     {
+      "n": 2,
+      "label": "y"
+     }
+    ],
+    "ref": "z",
+    "period": {
+     "start": "2026-01",
+     "end": "2026-03"
+    },
+    "amount": 10000
+   },
+   "settings": {
+    "threshold": 10000
+   },
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "ref",
+      "path": "ref",
+      "code": "REF_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "ref-wrong-type",
+   "ruleSet": "vocab-demo",
+   "input": {
+    "name": "abc",
+    "count": 5,
+    "kind": "a",
+    "code": "AB12",
+    "items": [
+     {
+      "n": 1,
+      "label": "x"
+     },
+     {
+      "n": 2,
+      "label": "y"
+     }
+    ],
+    "ref": 1,
+    "period": {
+     "start": "2026-01",
+     "end": "2026-03"
+    },
+    "amount": 10000
+   },
+   "settings": {
+    "threshold": 10000
+   },
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "ref",
+      "path": "ref",
+      "code": "REF_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "period-reversed",
+   "ruleSet": "vocab-demo",
+   "input": {
+    "name": "abc",
+    "count": 5,
+    "kind": "a",
+    "code": "AB12",
+    "items": [
+     {
+      "n": 1,
+      "label": "x"
+     },
+     {
+      "n": 2,
+      "label": "y"
+     }
+    ],
+    "ref": "x",
+    "period": {
+     "start": "2026-05",
+     "end": "2026-03"
+    },
+    "amount": 10000
+   },
+   "settings": {
+    "threshold": 10000
+   },
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "period",
+      "path": "period",
+      "code": "PERIOD_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "period-month-13",
+   "ruleSet": "vocab-demo",
+   "input": {
+    "name": "abc",
+    "count": 5,
+    "kind": "a",
+    "code": "AB12",
+    "items": [
+     {
+      "n": 1,
+      "label": "x"
+     },
+     {
+      "n": 2,
+      "label": "y"
+     }
+    ],
+    "ref": "x",
+    "period": {
+     "start": "2026-01",
+     "end": "2026-13"
+    },
+    "amount": 10000
+   },
+   "settings": {
+    "threshold": 10000
+   },
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "period",
+      "path": "period",
+      "code": "PERIOD_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "period-short-month",
+   "ruleSet": "vocab-demo",
+   "input": {
+    "name": "abc",
+    "count": 5,
+    "kind": "a",
+    "code": "AB12",
+    "items": [
+     {
+      "n": 1,
+      "label": "x"
+     },
+     {
+      "n": 2,
+      "label": "y"
+     }
+    ],
+    "ref": "x",
+    "period": {
+     "start": "2026-1",
+     "end": "2026-03"
+    },
+    "amount": 10000
+   },
+   "settings": {
+    "threshold": 10000
+   },
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "period",
+      "path": "period",
+      "code": "PERIOD_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "period-same-month-allowed",
+   "ruleSet": "vocab-demo",
+   "input": {
+    "name": "abc",
+    "count": 5,
+    "kind": "a",
+    "code": "AB12",
+    "items": [
+     {
+      "n": 1,
+      "label": "x"
+     },
+     {
+      "n": 2,
+      "label": "y"
+     }
+    ],
+    "ref": "x",
+    "period": {
+     "start": "2026-03",
+     "end": "2026-03"
+    },
+    "amount": 10000
+   },
+   "settings": {
+    "threshold": 10000
+   },
+   "expect": {
+    "decision": "allow",
+    "failures": []
+   }
+  },
+  {
+   "id": "amount-below-threshold",
+   "ruleSet": "vocab-demo",
+   "input": {
+    "name": "abc",
+    "count": 5,
+    "kind": "a",
+    "code": "AB12",
+    "items": [
+     {
+      "n": 1,
+      "label": "x"
+     },
+     {
+      "n": 2,
+      "label": "y"
+     }
+    ],
+    "ref": "x",
+    "period": {
+     "start": "2026-01",
+     "end": "2026-03"
+    },
+    "amount": 9999
+   },
+   "settings": {
+    "threshold": 10000
+   },
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "amount",
+      "path": "amount",
+      "code": "AMOUNT_TOO_SMALL"
+     }
+    ]
+   }
+  },
+  {
+   "id": "amount-setting-missing",
+   "ruleSet": "vocab-demo",
+   "input": {
+    "name": "abc",
+    "count": 5,
+    "kind": "a",
+    "code": "AB12",
+    "items": [
+     {
+      "n": 1,
+      "label": "x"
+     },
+     {
+      "n": 2,
+      "label": "y"
+     }
+    ],
+    "ref": "x",
+    "period": {
+     "start": "2026-01",
+     "end": "2026-03"
+    },
+    "amount": 10000
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "amount",
+      "path": "amount",
+      "code": "AMOUNT_TOO_SMALL"
+     }
+    ]
+   }
+  },
+  {
+   "id": "amount-setting-non-integer",
+   "ruleSet": "vocab-demo",
+   "input": {
+    "name": "abc",
+    "count": 5,
+    "kind": "a",
+    "code": "AB12",
+    "items": [
+     {
+      "n": 1,
+      "label": "x"
+     },
+     {
+      "n": 2,
+      "label": "y"
+     }
+    ],
+    "ref": "x",
+    "period": {
+     "start": "2026-01",
+     "end": "2026-03"
+    },
+    "amount": 10000
+   },
+   "settings": {
+    "threshold": 1.5
+   },
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "amount",
+      "path": "amount",
+      "code": "AMOUNT_TOO_SMALL"
+     }
+    ]
+   }
+  },
+  {
+   "id": "unknown-field",
+   "ruleSet": "vocab-demo",
+   "input": {
+    "name": "abc",
+    "count": 5,
+    "kind": "a",
+    "code": "AB12",
+    "items": [
+     {
+      "n": 1,
+      "label": "x"
+     },
+     {
+      "n": 2,
+      "label": "y"
+     }
+    ],
+    "ref": "x",
+    "period": {
+     "start": "2026-01",
+     "end": "2026-03"
+    },
+    "amount": 10000,
+    "zzz": 1
+   },
+   "settings": {
+    "threshold": 10000
+   },
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "top-known",
+      "path": "",
+      "code": "UNKNOWN_FIELD"
+     }
+    ]
+   }
+  },
+  {
+   "id": "optional-note-wrong-type",
+   "ruleSet": "vocab-demo",
+   "input": {
+    "name": "abc",
+    "count": 5,
+    "kind": "a",
+    "code": "AB12",
+    "items": [
+     {
+      "n": 1,
+      "label": "x"
+     },
+     {
+      "n": 2,
+      "label": "y"
+     }
+    ],
+    "ref": "x",
+    "period": {
+     "start": "2026-01",
+     "end": "2026-03"
+    },
+    "amount": 10000,
+    "optionalNote": 5
+   },
+   "settings": {
+    "threshold": 10000
+   },
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "note",
+      "path": "optionalNote",
+      "code": "NOTE_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "optional-note-null",
+   "ruleSet": "vocab-demo",
+   "input": {
+    "name": "abc",
+    "count": 5,
+    "kind": "a",
+    "code": "AB12",
+    "items": [
+     {
+      "n": 1,
+      "label": "x"
+     },
+     {
+      "n": 2,
+      "label": "y"
+     }
+    ],
+    "ref": "x",
+    "period": {
+     "start": "2026-01",
+     "end": "2026-03"
+    },
+    "amount": 10000,
+    "optionalNote": null
+   },
+   "settings": {
+    "threshold": 10000
+   },
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "note",
+      "path": "optionalNote",
+      "code": "NOTE_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "optional-note-present-ok",
+   "ruleSet": "vocab-demo",
+   "input": {
+    "name": "abc",
+    "count": 5,
+    "kind": "a",
+    "code": "AB12",
+    "items": [
+     {
+      "n": 1,
+      "label": "x"
+     },
+     {
+      "n": 2,
+      "label": "y"
+     }
+    ],
+    "ref": "x",
+    "period": {
+     "start": "2026-01",
+     "end": "2026-03"
+    },
+    "amount": 10000,
+    "optionalNote": "hi"
+   },
+   "settings": {
+    "threshold": 10000
+   },
+   "expect": {
+    "decision": "allow",
+    "failures": []
+   }
+  },
+  {
+   "id": "bad-patterns-all-rejected",
+   "ruleSet": "bad-patterns",
+   "input": {
+    "a": "abc",
+    "b": "abc",
+    "c": "b",
+    "d": "ab",
+    "e": "abc",
+    "f": " ",
+    "g": "é"
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "dot",
+      "path": "a",
+      "code": "UNSUPPORTED_PATTERN"
+     },
+     {
+      "rule": "anchor",
+      "path": "b",
+      "code": "UNSUPPORTED_PATTERN"
+     },
+     {
+      "rule": "negated",
+      "path": "c",
+      "code": "UNSUPPORTED_PATTERN"
+     },
+     {
+      "rule": "lookahead",
+      "path": "d",
+      "code": "UNSUPPORTED_PATTERN"
+     },
+     {
+      "rule": "broken",
+      "path": "e",
+      "code": "UNSUPPORTED_PATTERN"
+     },
+     {
+      "rule": "space-class",
+      "path": "f",
+      "code": "UNSUPPORTED_PATTERN"
+     },
+     {
+      "rule": "non-ascii",
+      "path": "g",
+      "code": "UNSUPPORTED_PATTERN"
+     }
+    ]
+   }
+  },
+  {
+   "id": "bad-patterns-absent-fields-allowed",
+   "ruleSet": "bad-patterns",
+   "input": {
+    "unrelated": 1
+   },
+   "settings": {},
+   "expect": {
+    "decision": "allow",
+    "failures": []
+   }
+  },
+  {
+   "id": "malformed-rules-deny",
+   "ruleSet": "malformed-rules",
+   "input": {
+    "a": "x"
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "no-reason",
+      "path": "",
+      "code": "INVALID_RULE"
+     },
+     {
+      "rule": "two-keys",
+      "path": "a",
+      "code": "TWO_KEYS"
+     },
+     {
+      "rule": "unknown-check",
+      "path": "a",
+      "code": "UNKNOWN_CHECK"
+     }
+    ]
+   }
+  }
+ ]
+}

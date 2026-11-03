@@ -1,0 +1,126 @@
+{
+ "rules": "rules/validator-rules.json",
+ "cases": [
+  {
+   "id": "unknown-ruleset",
+   "ruleSet": "no-such-set",
+   "input": {
+    "a": 1
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "",
+      "path": "",
+      "code": "UNKNOWN_RULESET"
+     }
+    ]
+   }
+  },
+  {
+   "id": "published-data-has-no-rules-yet",
+   "ruleSet": "published-data",
+   "input": {
+    "a": 1
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "",
+      "path": "",
+      "code": "NO_RULES"
+     }
+    ]
+   }
+  },
+  {
+   "id": "access-admin-has-no-rules-yet",
+   "ruleSet": "access-admin",
+   "input": {
+    "a": 1
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "",
+      "path": "",
+      "code": "NO_RULES"
+     }
+    ]
+   }
+  },
+  {
+   "id": "empty-object-denied-by-rule-set-without-rules",
+   "ruleSet": "access-admin",
+   "input": {},
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "",
+      "path": "",
+      "code": "NO_RULES"
+     }
+    ]
+   }
+  },
+  {
+   "id": "array-input-denied",
+   "ruleSet": "paste-input",
+   "input": [
+    1,
+    2
+   ],
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "",
+      "path": "",
+      "code": "INVALID_INPUT"
+     }
+    ]
+   }
+  },
+  {
+   "id": "string-input-denied",
+   "ruleSet": "paste-input",
+   "input": "hello",
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "",
+      "path": "",
+      "code": "INVALID_INPUT"
+     }
+    ]
+   }
+  },
+  {
+   "id": "null-input-denied",
+   "ruleSet": "paste-input",
+   "input": null,
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "",
+      "path": "",
+      "code": "INVALID_INPUT"
+     }
+    ]
+   }
+  }
+ ]
+}

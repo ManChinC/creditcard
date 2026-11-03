@@ -9,6 +9,9 @@ admin-data/
 # 執行環境產物
 .venv/
 .venv-semgrep/
+
+# Archify 產生的圖與暫存
+.archify/
 __pycache__/
 *.pyc
 .pytest_cache/

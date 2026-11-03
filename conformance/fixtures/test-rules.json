@@ -1,0 +1,321 @@
+{
+  "rulesVersion": "test-fixture",
+  "ruleSets": {
+    "vocab-demo": {
+      "source": "test fixture exercising every vocabulary check; not a production rule set",
+      "rules": [
+        {
+          "id": "top-known",
+          "path": "",
+          "checks": [
+            {
+              "noUnknownFields": [
+                "name",
+                "count",
+                "kind",
+                "code",
+                "items",
+                "ref",
+                "period",
+                "amount",
+                "optionalNote"
+              ]
+            }
+          ],
+          "reason": "UNKNOWN_FIELD"
+        },
+        {
+          "id": "name",
+          "path": "name",
+          "checks": [
+            {
+              "required": true
+            },
+            {
+              "type": "string"
+            },
+            {
+              "minLength": 2
+            },
+            {
+              "maxLength": 4
+            }
+          ],
+          "reason": "NAME_INVALID"
+        },
+        {
+          "id": "count",
+          "path": "count",
+          "checks": [
+            {
+              "required": true
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "min": 0
+            },
+            {
+              "max": 100
+            }
+          ],
+          "reason": "COUNT_INVALID"
+        },
+        {
+          "id": "kind",
+          "path": "kind",
+          "checks": [
+            {
+              "required": true
+            },
+            {
+              "enum": [
+                "a",
+                "b",
+                1,
+                true
+              ]
+            }
+          ],
+          "reason": "KIND_INVALID"
+        },
+        {
+          "id": "code",
+          "path": "code",
+          "checks": [
+            {
+              "required": true
+            },
+            {
+              "pattern": "[A-Z]{2}[0-9]{2}"
+            }
+          ],
+          "reason": "CODE_INVALID"
+        },
+        {
+          "id": "items-size",
+          "path": "items",
+          "checks": [
+            {
+              "required": true
+            },
+            {
+              "type": "array"
+            },
+            {
+              "maxItems": 3
+            }
+          ],
+          "reason": "ITEMS_TOO_MANY"
+        },
+        {
+          "id": "item-n",
+          "path": "items[].n",
+          "checks": [
+            {
+              "required": true
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "min": 1
+            }
+          ],
+          "reason": "ITEM_INVALID"
+        },
+        {
+          "id": "ref",
+          "path": "ref",
+          "checks": [
+            {
+              "required": true
+            },
+            {
+              "refersTo": "items[].label"
+            }
+          ],
+          "reason": "REF_INVALID"
+        },
+        {
+          "id": "period",
+          "path": "period",
+          "checks": [
+            {
+              "required": true
+            },
+            {
+              "type": "object"
+            },
+            {
+              "periodOrder": [
+                "start",
+                "end"
+              ]
+            }
+          ],
+          "reason": "PERIOD_INVALID"
+        },
+        {
+          "id": "amount",
+          "path": "amount",
+          "checks": [
+            {
+              "required": true
+            },
+            {
+              "atLeastSetting": "threshold"
+            }
+          ],
+          "reason": "AMOUNT_TOO_SMALL"
+        },
+        {
+          "id": "note",
+          "path": "optionalNote",
+          "checks": [
+            {
+              "type": "string"
+            }
+          ],
+          "reason": "NOTE_INVALID"
+        }
+      ]
+    },
+    "bad-patterns": {
+      "source": "test fixture: unsupported or invalid patterns must be rejected the same way in both executors",
+      "rules": [
+        {
+          "id": "dot",
+          "path": "a",
+          "checks": [
+            {
+              "pattern": "a.c"
+            }
+          ],
+          "reason": "A_INVALID"
+        },
+        {
+          "id": "anchor",
+          "path": "b",
+          "checks": [
+            {
+              "pattern": "^abc$"
+            }
+          ],
+          "reason": "B_INVALID"
+        },
+        {
+          "id": "negated",
+          "path": "c",
+          "checks": [
+            {
+              "pattern": "[^a]"
+            }
+          ],
+          "reason": "C_INVALID"
+        },
+        {
+          "id": "lookahead",
+          "path": "d",
+          "checks": [
+            {
+              "pattern": "a(?=b)"
+            }
+          ],
+          "reason": "D_INVALID"
+        },
+        {
+          "id": "broken",
+          "path": "e",
+          "checks": [
+            {
+              "pattern": "(abc"
+            }
+          ],
+          "reason": "E_INVALID"
+        },
+        {
+          "id": "space-class",
+          "path": "f",
+          "checks": [
+            {
+              "pattern": "\\s"
+            }
+          ],
+          "reason": "F_INVALID"
+        },
+        {
+          "id": "non-ascii",
+          "path": "g",
+          "checks": [
+            {
+              "pattern": "é"
+            }
+          ],
+          "reason": "G_INVALID"
+        }
+      ]
+    },
+    "malformed-rules": {
+      "source": "test fixture: structurally broken rules must deny, never allow",
+      "rules": [
+        {
+          "id": "no-reason",
+          "path": "a",
+          "checks": [
+            {
+              "required": true
+            }
+          ]
+        },
+        {
+          "id": "two-keys",
+          "path": "a",
+          "checks": [
+            {
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "reason": "TWO_KEYS"
+        },
+        {
+          "id": "unknown-check",
+          "path": "a",
+          "checks": [
+            {
+              "shout": true
+            }
+          ],
+          "reason": "UNKNOWN_CHECK"
+        }
+      ]
+    },
+    "text-checks": {
+      "source": "test fixture for plainText and noCardNumber",
+      "rules": [
+        {
+          "id": "plain",
+          "path": "a",
+          "checks": [
+            {
+              "plainText": true
+            }
+          ],
+          "reason": "A_INVALID"
+        },
+        {
+          "id": "digits",
+          "path": "b",
+          "checks": [
+            {
+              "noCardNumber": true
+            }
+          ],
+          "reason": "B_INVALID"
+        }
+      ]
+    }
+  }
+}

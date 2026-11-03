@@ -42,6 +42,25 @@
 - LLM 相關操作：已登入且近端呼叫。
 - 任一失敗拒絕；回應不洩漏內部細節；拒絕紀錄不含個人資料。
 
+## 執行器介面與判定語意（T011、T012）
+
+- 介面：`evaluate(rules, ruleSetName, document, settings)` 回傳 `{decision: "allow"|"deny", failures: [{rule, path, code}]}`。
+- 允許條件：規則集存在、輸入為 JSON 物件、規則集至少有一條規則、所有規則通過；其餘一律拒絕。
+- 失敗代碼：規則自帶的 `reason`，加上執行器層級的 `UNKNOWN_RULESET`、`INVALID_INPUT`、`NO_RULES`、`INVALID_RULE`、`UNSUPPORTED_PATTERN`。
+- 路徑、整數、長度、相等、比對模式的語意見 `rules/validator-rules.json` 的 `semantics` 與 `patternSubset`。
+- 使用者確認的 13 個詞彙之外，US1 新增 `noCardNumber`（字串不得含 13 位以上連續數字，單一空格或連字號不中斷計數）與 `plainText`（字串不得含 `<`、`>`、控制字元），原因是比對模式子集無法在兩個語言一致地表達；兩者已有一致性案例。
+- 案例檔格式：`{"rules": "<規則檔路徑>", "cases": [{"id", "ruleSet", "input", "settings", "expect": {"decision", "failures"}}]}`，位於 `conformance/*.json`；`conformance/fixtures/test-rules.json` 為涵蓋全部詞彙的測試用規則集，非正式規則。
+
+## 已存在的規則集
+
+| 規則集 | 狀態 | 用途 |
+|---|---|---|
+| `stored-card`、`stored-channel`、`stored-mapping`、`stored-habit`、`stored-snapshot`、`stored-settings` | 已實作（T017、T018） | 瀏覽器儲存的讀寫驗證。以允許清單禁止末四碼、卡號、CVV、逐筆明細；長度與數量上限為佔位值 `[TBD: spec 未定義]` |
+| `paste-input` | 空（T024） | 貼上內容 |
+| `published-data` | 空（T039） | 公開回饋資料 |
+| `access-public` | 已實作（T065 瀏覽器部分，提前完成） | 瀏覽器內存取檢查：只放行已宣告的匿名操作 |
+| `access-admin` | 空（T065 本機部分） | 本機服務存取檢查；在此之前一律預設拒絕 |
+
 ## 一致性測試案例的最低涵蓋
 
 - 每條規則至少一個通過案例與一個拒絕案例。

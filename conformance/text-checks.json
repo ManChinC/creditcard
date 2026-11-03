@@ -1,0 +1,341 @@
+{
+ "rules": "conformance/fixtures/test-rules.json",
+ "cases": [
+  {
+   "id": "plain-text-ok",
+   "ruleSet": "text-checks",
+   "input": {
+    "a": "hello 世界 😀"
+   },
+   "settings": {},
+   "expect": {
+    "decision": "allow",
+    "failures": []
+   }
+  },
+  {
+   "id": "plain-less-than",
+   "ruleSet": "text-checks",
+   "input": {
+    "a": "a<b"
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "plain",
+      "path": "a",
+      "code": "A_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "plain-greater-than",
+   "ruleSet": "text-checks",
+   "input": {
+    "a": "a>b"
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "plain",
+      "path": "a",
+      "code": "A_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "plain-script-tag",
+   "ruleSet": "text-checks",
+   "input": {
+    "a": "<script>alert(1)</script>"
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "plain",
+      "path": "a",
+      "code": "A_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "plain-tab",
+   "ruleSet": "text-checks",
+   "input": {
+    "a": "tab\tinside"
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "plain",
+      "path": "a",
+      "code": "A_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "plain-newline",
+   "ruleSet": "text-checks",
+   "input": {
+    "a": "line\nbreak"
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "plain",
+      "path": "a",
+      "code": "A_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "plain-nul",
+   "ruleSet": "text-checks",
+   "input": {
+    "a": "nul\u0000x"
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "plain",
+      "path": "a",
+      "code": "A_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "plain-del",
+   "ruleSet": "text-checks",
+   "input": {
+    "a": "delx"
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "plain",
+      "path": "a",
+      "code": "A_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "plain-ampersand-and-quotes-ok",
+   "ruleSet": "text-checks",
+   "input": {
+    "a": "A&B \"quoted\" 'single'"
+   },
+   "settings": {},
+   "expect": {
+    "decision": "allow",
+    "failures": []
+   }
+  },
+  {
+   "id": "plain-not-string",
+   "ruleSet": "text-checks",
+   "input": {
+    "a": 5
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "plain",
+      "path": "a",
+      "code": "A_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "digits-12-ok",
+   "ruleSet": "text-checks",
+   "input": {
+    "b": "123456789012"
+   },
+   "settings": {},
+   "expect": {
+    "decision": "allow",
+    "failures": []
+   }
+  },
+  {
+   "id": "digits-13-denied",
+   "ruleSet": "text-checks",
+   "input": {
+    "b": "1234567890123"
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "digits",
+      "path": "b",
+      "code": "B_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "digits-spaced-card-denied",
+   "ruleSet": "text-checks",
+   "input": {
+    "b": "4111 1111 1111 1111"
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "digits",
+      "path": "b",
+      "code": "B_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "digits-hyphen-card-denied",
+   "ruleSet": "text-checks",
+   "input": {
+    "b": "4111-1111-1111-1111"
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "digits",
+      "path": "b",
+      "code": "B_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "digits-13-with-separators-denied",
+   "ruleSet": "text-checks",
+   "input": {
+    "b": "1234 5678 9012 3"
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "digits",
+      "path": "b",
+      "code": "B_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "digits-double-space-breaks-run",
+   "ruleSet": "text-checks",
+   "input": {
+    "b": "4111  1111 1111 1111"
+   },
+   "settings": {},
+   "expect": {
+    "decision": "allow",
+    "failures": []
+   }
+  },
+  {
+   "id": "digits-inside-text-denied",
+   "ruleSet": "text-checks",
+   "input": {
+    "b": "卡號4111111111111111結尾"
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "digits",
+      "path": "b",
+      "code": "B_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "digits-letters-between-ok",
+   "ruleSet": "text-checks",
+   "input": {
+    "b": "1234a5678b9012c3456"
+   },
+   "settings": {},
+   "expect": {
+    "decision": "allow",
+    "failures": []
+   }
+  },
+  {
+   "id": "digits-fullwidth-ok",
+   "ruleSet": "text-checks",
+   "input": {
+    "b": "１１１１１１１１１１１１１１１１"
+   },
+   "settings": {},
+   "expect": {
+    "decision": "allow",
+    "failures": []
+   }
+  },
+  {
+   "id": "digits-order-number-ok",
+   "ruleSet": "text-checks",
+   "input": {
+    "b": "order 20261103"
+   },
+   "settings": {},
+   "expect": {
+    "decision": "allow",
+    "failures": []
+   }
+  },
+  {
+   "id": "digits-not-string",
+   "ruleSet": "text-checks",
+   "input": {
+    "b": 4111111111111111
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "digits",
+      "path": "b",
+      "code": "B_INVALID"
+     }
+    ]
+   }
+  }
+ ]
+}

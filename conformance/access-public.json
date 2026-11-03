@@ -1,0 +1,377 @@
+{
+ "rules": "rules/validator-rules.json",
+ "cases": [
+  {
+   "id": "anonymous-declared-operation-allowed",
+   "ruleSet": "access-public",
+   "input": {
+    "operation": "queryChannel",
+    "declaration": {
+     "accessRequirement": "anonymous",
+     "protectionLevel": "public"
+    },
+    "caller": {
+     "authenticated": false,
+     "isLocal": false
+    }
+   },
+   "settings": {},
+   "expect": {
+    "decision": "allow",
+    "failures": []
+   }
+  },
+  {
+   "id": "undeclared-operation-denied",
+   "ruleSet": "access-public",
+   "input": {
+    "operation": "queryChannel",
+    "caller": {
+     "authenticated": false,
+     "isLocal": false
+    }
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "declared",
+      "path": "declaration",
+      "code": "UNDECLARED"
+     },
+     {
+      "rule": "anonymous-only",
+      "path": "declaration.accessRequirement",
+      "code": "NOT_ANONYMOUS"
+     },
+     {
+      "rule": "protection-level",
+      "path": "declaration.protectionLevel",
+      "code": "PROTECTION_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "login-required-denied-in-browser",
+   "ruleSet": "access-public",
+   "input": {
+    "operation": "queryChannel",
+    "declaration": {
+     "accessRequirement": "login-required",
+     "protectionLevel": "public"
+    },
+    "caller": {
+     "authenticated": false,
+     "isLocal": false
+    }
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "anonymous-only",
+      "path": "declaration.accessRequirement",
+      "code": "NOT_ANONYMOUS"
+     }
+    ]
+   }
+  },
+  {
+   "id": "unknown-access-requirement-denied",
+   "ruleSet": "access-public",
+   "input": {
+    "operation": "queryChannel",
+    "declaration": {
+     "accessRequirement": "admin",
+     "protectionLevel": "public"
+    },
+    "caller": {
+     "authenticated": false,
+     "isLocal": false
+    }
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "anonymous-only",
+      "path": "declaration.accessRequirement",
+      "code": "NOT_ANONYMOUS"
+     }
+    ]
+   }
+  },
+  {
+   "id": "empty-protection-level-denied",
+   "ruleSet": "access-public",
+   "input": {
+    "operation": "queryChannel",
+    "declaration": {
+     "accessRequirement": "anonymous",
+     "protectionLevel": ""
+    },
+    "caller": {
+     "authenticated": false,
+     "isLocal": false
+    }
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "protection-level",
+      "path": "declaration.protectionLevel",
+      "code": "PROTECTION_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "operation-with-space-denied",
+   "ruleSet": "access-public",
+   "input": {
+    "operation": "query channel",
+    "declaration": {
+     "accessRequirement": "anonymous",
+     "protectionLevel": "public"
+    },
+    "caller": {
+     "authenticated": false,
+     "isLocal": false
+    }
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "operation",
+      "path": "operation",
+      "code": "OPERATION_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "empty-operation-denied",
+   "ruleSet": "access-public",
+   "input": {
+    "operation": "",
+    "declaration": {
+     "accessRequirement": "anonymous",
+     "protectionLevel": "public"
+    },
+    "caller": {
+     "authenticated": false,
+     "isLocal": false
+    }
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "operation",
+      "path": "operation",
+      "code": "OPERATION_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "operation-not-string-denied",
+   "ruleSet": "access-public",
+   "input": {
+    "operation": 5,
+    "declaration": {
+     "accessRequirement": "anonymous",
+     "protectionLevel": "public"
+    },
+    "caller": {
+     "authenticated": false,
+     "isLocal": false
+    }
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "operation",
+      "path": "operation",
+      "code": "OPERATION_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "caller-claim-field-denied",
+   "ruleSet": "access-public",
+   "input": {
+    "operation": "queryChannel",
+    "declaration": {
+     "accessRequirement": "anonymous",
+     "protectionLevel": "public"
+    },
+    "caller": {
+     "authenticated": false,
+     "isLocal": false
+    },
+    "claimedAccessRequirement": "anonymous"
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "known-fields",
+      "path": "",
+      "code": "UNKNOWN_FIELD"
+     }
+    ]
+   }
+  },
+  {
+   "id": "declaration-extra-field-denied",
+   "ruleSet": "access-public",
+   "input": {
+    "operation": "queryChannel",
+    "declaration": {
+     "accessRequirement": "anonymous",
+     "protectionLevel": "public",
+     "bypass": true
+    },
+    "caller": {
+     "authenticated": false,
+     "isLocal": false
+    }
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "declared",
+      "path": "declaration",
+      "code": "UNDECLARED"
+     }
+    ]
+   }
+  },
+  {
+   "id": "caller-authenticated-denied",
+   "ruleSet": "access-public",
+   "input": {
+    "operation": "queryChannel",
+    "declaration": {
+     "accessRequirement": "anonymous",
+     "protectionLevel": "public"
+    },
+    "caller": {
+     "authenticated": true,
+     "isLocal": false
+    }
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "caller-not-authenticated",
+      "path": "caller.authenticated",
+      "code": "CALLER_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "caller-local-denied",
+   "ruleSet": "access-public",
+   "input": {
+    "operation": "queryChannel",
+    "declaration": {
+     "accessRequirement": "anonymous",
+     "protectionLevel": "public"
+    },
+    "caller": {
+     "authenticated": false,
+     "isLocal": true
+    }
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "caller-not-local",
+      "path": "caller.isLocal",
+      "code": "CALLER_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "caller-missing-denied",
+   "ruleSet": "access-public",
+   "input": {
+    "operation": "queryChannel",
+    "declaration": {
+     "accessRequirement": "anonymous",
+     "protectionLevel": "public"
+    }
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "caller",
+      "path": "caller",
+      "code": "CALLER_INVALID"
+     },
+     {
+      "rule": "caller-not-authenticated",
+      "path": "caller.authenticated",
+      "code": "CALLER_INVALID"
+     },
+     {
+      "rule": "caller-not-local",
+      "path": "caller.isLocal",
+      "code": "CALLER_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "caller-authenticated-string-false-denied",
+   "ruleSet": "access-public",
+   "input": {
+    "operation": "queryChannel",
+    "declaration": {
+     "accessRequirement": "anonymous",
+     "protectionLevel": "public"
+    },
+    "caller": {
+     "authenticated": "false",
+     "isLocal": false
+    }
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "caller-not-authenticated",
+      "path": "caller.authenticated",
+      "code": "CALLER_INVALID"
+     }
+    ]
+   }
+  }
+ ]
+}

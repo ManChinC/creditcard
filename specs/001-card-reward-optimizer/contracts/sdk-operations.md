@@ -31,6 +31,21 @@
 | 送出至外部 LLM 並帶入結果 | FR-019、FR-042 | 已登入、近端 | 僅彙整後的通路表格 |
 | 檢視、確認、退回草稿；發布公開 JSON | FR-021、FR-033 | 已登入、近端 | 草稿標來源與查證日期 |
 
+## 存取檢查文件（T016）
+
+操作入口把下列事實交給 Validator 的 `access` 規則集判定，**入口本身不做允許／拒絕判斷**（Constitution XIII）：
+
+| 欄位 | 來源 | 說明 |
+|---|---|---|
+| `operation` | 呼叫的操作名稱 | 非字串時以空字串送出 |
+| `declaration` | 程式內的宣告登錄 | `{accessRequirement, protectionLevel}`；操作未宣告時此欄位**不存在** |
+| `caller` | 入口依實際連線狀態填入 | 瀏覽器內固定為 `{authenticated: false, isLocal: false}`；本機服務由 T067 填入 |
+
+- 呼叫端自稱的存取等級、登入狀態、近端狀態一律不轉送。
+- 宣告物件建立後凍結，執行期不可修改；重複宣告與格式錯誤的宣告在註冊時直接擲出錯誤。
+- `accessRequirement` 目前取值：`anonymous`、`login-required`。`protectionLevel` 的取值集合 spec 尚未定義，登錄只當作不透明字串；公開操作暫用 `public` `[INFERRED: 佔位名稱，待使用者確認]`。
+- 存取規則集分兩個：`access-public`（瀏覽器內，已實作）只放行已宣告、`anonymous`、且呼叫者未登入也非近端的操作；`access-admin`（本機服務，accessToken、protectionLevel、近端呼叫）仍為空，由 T065 的本機部分填入，在那之前一律預設拒絕。
+
 ## 拒絕行為（FR-046）
 
 - 無效或過期 accessToken、protectionLevel 不足、非近端呼叫、未宣告存取規則，一律拒絕。

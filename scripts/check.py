@@ -84,7 +84,7 @@ def main():
     elif not node:
         record("js-tests", "FAIL", "找不到 node")
     else:
-        run("js-tests", [node, "--test", "web/tests"])
+        run("js-tests", [node, "--test", "web/tests/**/*.test.js"])
 
     # 掃描（AD-009）
     gitleaks = find_tool("gitleaks")

@@ -1,43 +1,528 @@
 {
   "rulesVersion": "0.1.0-draft",
-  "status": "skeleton (T010). Vocabulary and pattern subset are [INFERRED] and await user confirmation.",
+  "status": "T010 skeleton; vocabulary confirmed by the user on 2026-11-03; noCardNumber and plainText added during US1 (T024) because patterns cannot express them identically in both languages; pattern subset narrowed during T011/T012.",
   "defaultDecision": "deny",
+  "semantics": {
+    "path": "'' is the document root; 'a.b' walks object keys; a '[]' suffix on a key iterates an array. Concrete failure paths use 'a[2].b'; a missing array or key is reported at that prefix.",
+    "absentFields": "a field that is absent passes every check except 'required'",
+    "integer": "a whole number (5 and 5.0 both qualify), not a boolean, with absolute value at most 9007199254740991",
+    "length": "counted in Unicode code points, not UTF-16 units",
+    "equality": "enum and refersTo compare type and value; true never equals 1; arrays and objects never compare equal",
+    "pattern": "always matches the whole string; case-sensitive",
+    "allowRule": "allow only when the rule set exists, the input is a JSON object, the rule set has at least one rule, and every rule passes; anything else is deny"
+  },
   "vocabulary": {
     "checks": {
-      "required": { "params": [], "meaning": "field must be present" },
-      "noUnknownFields": { "params": [], "meaning": "fields not defined by the rule set are rejected (default deny)" },
-      "type": { "params": ["string | integer | array | object"], "meaning": "value must have this type; integer means whole number, no fractions" },
-      "min": { "params": ["integer"], "meaning": "integer value >= param" },
-      "max": { "params": ["integer"], "meaning": "integer value <= param" },
-      "minLength": { "params": ["integer"], "meaning": "string length >= param" },
-      "maxLength": { "params": ["integer"], "meaning": "string length <= param" },
-      "maxItems": { "params": ["integer"], "meaning": "array length <= param" },
-      "enum": { "params": ["list of allowed values"], "meaning": "value must be one of the list" },
-      "pattern": { "params": ["regex within patternSubset"], "meaning": "string must match the pattern" },
-      "refersTo": { "params": ["sibling path"], "meaning": "value must equal one value found at the referenced path in the same document" },
-      "atLeastSetting": { "params": ["setting name"], "meaning": "integer value >= the named user setting (for example the large-item threshold)" },
-      "periodOrder": { "params": ["start path", "end path"], "meaning": "start month is not later than end month" }
+      "required": {"params": [], "meaning": "field must be present"},
+      "noUnknownFields": {
+        "params": ["list of allowed field names"],
+        "meaning": "the object may contain only the listed fields (default deny)"
+      },
+      "type": {
+        "params": ["string | integer | array | object"],
+        "meaning": "value must have this type; integer means whole number, no fractions"
+      },
+      "min": {"params": ["integer"], "meaning": "integer value >= param"},
+      "max": {"params": ["integer"], "meaning": "integer value <= param"},
+      "minLength": {"params": ["integer"], "meaning": "string length >= param"},
+      "maxLength": {"params": ["integer"], "meaning": "string length <= param"},
+      "maxItems": {"params": ["integer"], "meaning": "array length <= param"},
+      "enum": {"params": ["list of allowed values"], "meaning": "value must be one of the list"},
+      "pattern": {"params": ["regex within patternSubset"], "meaning": "string must match the pattern"},
+      "refersTo": {
+        "params": ["sibling path"],
+        "meaning": "value must equal one value found at the referenced path in the same document"
+      },
+      "atLeastSetting": {
+        "params": ["setting name"],
+        "meaning": "integer value >= the named user setting (for example the large-item threshold)"
+      },
+      "periodOrder": {"params": ["start path", "end path"], "meaning": "start month is not later than end month"},
+      "noCardNumber": {
+        "params": [],
+        "meaning": "string must not contain 13 or more ASCII digits in a row; a single space or hyphen between digits does not break the run (full-width digits and other characters reset it)"
+      },
+      "plainText": {"params": [], "meaning": "string must not contain '<', '>' or control characters (U+0000-U+001F, U+007F)"}
     },
     "patternSubset": {
-      "allowed": ["literal characters", "character classes [...]", "anchors ^ $", "quantifiers * + ? {m,n}", "alternation |", "non-capturing and capturing groups"],
-      "forbidden": ["lookahead and lookbehind", "backreferences", "named groups", "inline flags", "unicode property escapes", "possessive quantifiers"],
-      "note": "The subset must behave identically in Python and JavaScript; every pattern rule needs conformance cases."
+      "allowed": [
+        "printable ASCII literal characters",
+        "character classes [...] without negation",
+        "\\d and \\w (ASCII digits and word characters)",
+        "escaped metacharacters",
+        "quantifiers * + ? {m,n}",
+        "alternation |",
+        "non-capturing and capturing groups"
+      ],
+      "forbidden": [
+        "'.' (line terminators differ between Python and JavaScript)",
+        "'^' and '$' (patterns already match the whole string)",
+        "\\s (Unicode spaces differ)",
+        "negated classes [^...] (astral characters differ)",
+        "non-ASCII characters in the pattern",
+        "lookahead and lookbehind",
+        "backreferences",
+        "named groups",
+        "inline flags",
+        "unicode property escapes",
+        "possessive quantifiers"
+      ],
+      "note": "A pattern that is outside the subset or does not compile is rejected with code UNSUPPORTED_PATTERN by both executors. The subset must behave identically in Python and JavaScript; every pattern rule needs conformance cases."
     },
     "decisions": ["allow", "deny"],
     "reasonCodes": "to be listed per rule when rules are written (T024, T039, T065)"
   },
   "ruleSets": {
     "paste-input": {
-      "source": "specs/001-card-reward-optimizer/contracts/paste-format.md",
+      "source": "specs/001-card-reward-optimizer/contracts/paste-format.md. Length and size limits are placeholders: [TBD: the spec defines no limits].",
+      "rules": [
+        {
+          "id": "known-fields",
+          "path": "",
+          "checks": [{"noUnknownFields": ["formatVersion", "period", "currency", "cards", "channels", "largeItems"]}],
+          "reason": "UNKNOWN_FIELD"
+        },
+        {
+          "id": "format-version",
+          "path": "formatVersion",
+          "checks": [{"required": true}, {"enum": ["1"]}],
+          "reason": "FORMAT_VERSION_UNSUPPORTED"
+        },
+        {
+          "id": "period",
+          "path": "period",
+          "checks": [
+            {"required": true},
+            {"type": "object"},
+            {"noUnknownFields": ["start", "end"]},
+            {"periodOrder": ["start", "end"]}
+          ],
+          "reason": "PERIOD_INVALID"
+        },
+        {
+          "id": "currency",
+          "path": "currency",
+          "checks": [{"required": true}, {"enum": ["TWD"]}],
+          "reason": "CURRENCY_NOT_TWD"
+        },
+        {
+          "id": "cards",
+          "path": "cards",
+          "checks": [{"required": true}, {"type": "array"}, {"maxItems": 50}],
+          "reason": "CARDS_INVALID"
+        },
+        {
+          "id": "card-item",
+          "path": "cards[]",
+          "checks": [{"noUnknownFields": ["issuer", "name"]}],
+          "reason": "UNKNOWN_FIELD"
+        },
+        {
+          "id": "card-issuer",
+          "path": "cards[].issuer",
+          "checks": [{"required": true}, {"enum": ["國泰", "永豐", "富邦", "台新"]}],
+          "reason": "ISSUER_INVALID"
+        },
+        {
+          "id": "card-name",
+          "path": "cards[].name",
+          "checks": [
+            {"required": true},
+            {"type": "string"},
+            {"minLength": 1},
+            {"maxLength": 40},
+            {"plainText": true},
+            {"noCardNumber": true}
+          ],
+          "reason": "NAME_INVALID"
+        },
+        {
+          "id": "channels",
+          "path": "channels",
+          "checks": [{"required": true}, {"type": "array"}, {"maxItems": 100}],
+          "reason": "CHANNELS_INVALID"
+        },
+        {
+          "id": "channel-item",
+          "path": "channels[]",
+          "checks": [{"noUnknownFields": ["name", "total", "mainCard"]}],
+          "reason": "UNKNOWN_FIELD"
+        },
+        {
+          "id": "channel-name",
+          "path": "channels[].name",
+          "checks": [
+            {"required": true},
+            {"type": "string"},
+            {"minLength": 1},
+            {"maxLength": 30},
+            {"plainText": true},
+            {"noCardNumber": true}
+          ],
+          "reason": "NAME_INVALID"
+        },
+        {
+          "id": "channel-total",
+          "path": "channels[].total",
+          "checks": [{"required": true}, {"type": "integer"}, {"min": 0}, {"max": 1000000000}],
+          "reason": "AMOUNT_INVALID"
+        },
+        {
+          "id": "channel-card",
+          "path": "channels[].mainCard",
+          "checks": [
+            {"required": true},
+            {"type": "string"},
+            {"minLength": 1},
+            {"maxLength": 40},
+            {"plainText": true},
+            {"noCardNumber": true},
+            {"refersTo": "cards[].name"}
+          ],
+          "reason": "MAIN_CARD_INVALID"
+        },
+        {
+          "id": "large-items",
+          "path": "largeItems",
+          "checks": [{"required": true}, {"type": "array"}, {"maxItems": 100}],
+          "reason": "LARGE_ITEMS_INVALID"
+        },
+        {
+          "id": "large-item",
+          "path": "largeItems[]",
+          "checks": [{"noUnknownFields": ["category", "amount"]}],
+          "reason": "UNKNOWN_FIELD"
+        },
+        {
+          "id": "large-category",
+          "path": "largeItems[].category",
+          "checks": [
+            {"required": true},
+            {"type": "string"},
+            {"minLength": 1},
+            {"maxLength": 30},
+            {"plainText": true},
+            {"noCardNumber": true}
+          ],
+          "reason": "CATEGORY_INVALID"
+        },
+        {
+          "id": "large-amount",
+          "path": "largeItems[].amount",
+          "checks": [{"required": true}, {"type": "integer"}, {"atLeastSetting": "largeItemThreshold"}, {"max": 1000000000}],
+          "reason": "LARGE_ITEM_BELOW_THRESHOLD"
+        }
+      ]
+    },
+    "published-data": {"source": "specs/001-card-reward-optimizer/contracts/published-reward-data.md", "rules": []},
+    "access-public": {
+      "source": "specs/001-card-reward-optimizer/contracts/sdk-operations.md. Browser layer: only anonymous operations are ever allowed; nobody is authenticated or trusted as local.",
+      "rules": [
+        {
+          "id": "known-fields",
+          "path": "",
+          "checks": [{"noUnknownFields": ["operation", "declaration", "caller"]}],
+          "reason": "UNKNOWN_FIELD"
+        },
+        {
+          "id": "operation",
+          "path": "operation",
+          "checks": [{"required": true}, {"type": "string"}, {"pattern": "[A-Za-z][A-Za-z0-9]{0,63}"}],
+          "reason": "OPERATION_INVALID"
+        },
+        {
+          "id": "declared",
+          "path": "declaration",
+          "checks": [{"required": true}, {"type": "object"}, {"noUnknownFields": ["accessRequirement", "protectionLevel"]}],
+          "reason": "UNDECLARED"
+        },
+        {
+          "id": "anonymous-only",
+          "path": "declaration.accessRequirement",
+          "checks": [{"required": true}, {"enum": ["anonymous"]}],
+          "reason": "NOT_ANONYMOUS"
+        },
+        {
+          "id": "protection-level",
+          "path": "declaration.protectionLevel",
+          "checks": [{"required": true}, {"type": "string"}, {"minLength": 1}],
+          "reason": "PROTECTION_INVALID"
+        },
+        {
+          "id": "caller",
+          "path": "caller",
+          "checks": [{"required": true}, {"type": "object"}, {"noUnknownFields": ["authenticated", "isLocal"]}],
+          "reason": "CALLER_INVALID"
+        },
+        {
+          "id": "caller-not-authenticated",
+          "path": "caller.authenticated",
+          "checks": [{"required": true}, {"enum": [false]}],
+          "reason": "CALLER_INVALID"
+        },
+        {
+          "id": "caller-not-local",
+          "path": "caller.isLocal",
+          "checks": [{"required": true}, {"enum": [false]}],
+          "reason": "CALLER_INVALID"
+        }
+      ]
+    },
+    "access-admin": {
+      "source": "specs/001-card-reward-optimizer/contracts/sdk-operations.md. Local service layer (accessToken, protectionLevel, local call): rules arrive with T065.",
       "rules": []
     },
-    "published-data": {
-      "source": "specs/001-card-reward-optimizer/contracts/published-reward-data.md",
-      "rules": []
+    "stored-card": {
+      "source": "Stored-record rules (T017/T018). Allow-lists mean last4, card numbers and CVV can never be stored (FR-015, FR-016). Length and size limits are placeholders: [TBD: the spec defines no limits].",
+      "rules": [
+        {
+          "id": "known-fields",
+          "path": "",
+          "checks": [{"noUnknownFields": ["id", "issuer", "name"]}],
+          "reason": "UNKNOWN_FIELD"
+        },
+        {
+          "id": "id",
+          "path": "id",
+          "checks": [{"required": true}, {"type": "string"}, {"pattern": "[A-Za-z0-9_-]{1,40}"}],
+          "reason": "ID_INVALID"
+        },
+        {
+          "id": "issuer",
+          "path": "issuer",
+          "checks": [{"required": true}, {"enum": ["國泰", "永豐", "富邦", "台新"]}],
+          "reason": "ISSUER_INVALID"
+        },
+        {
+          "id": "name",
+          "path": "name",
+          "checks": [{"required": true}, {"type": "string"}, {"minLength": 1}, {"maxLength": 40}],
+          "reason": "NAME_INVALID"
+        }
+      ]
     },
-    "access": {
-      "source": "specs/001-card-reward-optimizer/contracts/sdk-operations.md",
-      "rules": []
+    "stored-channel": {
+      "source": "Stored-record rules (T017/T018). Allow-lists mean last4, card numbers and CVV can never be stored (FR-015, FR-016). Length and size limits are placeholders: [TBD: the spec defines no limits].",
+      "rules": [
+        {
+          "id": "known-fields",
+          "path": "",
+          "checks": [{"noUnknownFields": ["id", "name", "aliases", "origin"]}],
+          "reason": "UNKNOWN_FIELD"
+        },
+        {
+          "id": "id",
+          "path": "id",
+          "checks": [{"required": true}, {"type": "string"}, {"pattern": "[A-Za-z0-9_-]{1,40}"}],
+          "reason": "ID_INVALID"
+        },
+        {
+          "id": "name",
+          "path": "name",
+          "checks": [{"required": true}, {"type": "string"}, {"minLength": 1}, {"maxLength": 30}],
+          "reason": "NAME_INVALID"
+        },
+        {
+          "id": "aliases",
+          "path": "aliases",
+          "checks": [{"required": true}, {"type": "array"}, {"maxItems": 10}],
+          "reason": "ALIASES_INVALID"
+        },
+        {
+          "id": "alias-item",
+          "path": "aliases[]",
+          "checks": [{"type": "string"}, {"minLength": 1}, {"maxLength": 30}],
+          "reason": "ALIASES_INVALID"
+        },
+        {
+          "id": "origin",
+          "path": "origin",
+          "checks": [{"required": true}, {"enum": ["default", "custom"]}],
+          "reason": "ORIGIN_INVALID"
+        }
+      ]
+    },
+    "stored-mapping": {
+      "source": "Stored-record rules (T017/T018). Allow-lists mean last4, card numbers and CVV can never be stored (FR-015, FR-016). Length and size limits are placeholders: [TBD: the spec defines no limits].",
+      "rules": [
+        {
+          "id": "known-fields",
+          "path": "",
+          "checks": [{"noUnknownFields": ["id", "channelId", "cardId", "source"]}],
+          "reason": "UNKNOWN_FIELD"
+        },
+        {
+          "id": "id",
+          "path": "id",
+          "checks": [{"required": true}, {"type": "string"}, {"pattern": "[A-Za-z0-9_-]{1,40}"}],
+          "reason": "ID_INVALID"
+        },
+        {
+          "id": "channel",
+          "path": "channelId",
+          "checks": [{"required": true}, {"type": "string"}, {"pattern": "[A-Za-z0-9_-]{1,40}"}],
+          "reason": "CHANNEL_INVALID"
+        },
+        {
+          "id": "card",
+          "path": "cardId",
+          "checks": [{"type": "string"}, {"pattern": "[A-Za-z0-9_-]{1,40}"}],
+          "reason": "CARD_INVALID"
+        },
+        {
+          "id": "source",
+          "path": "source",
+          "checks": [{"required": true}, {"enum": ["imported", "self-reported"]}],
+          "reason": "SOURCE_INVALID"
+        }
+      ]
+    },
+    "stored-habit": {
+      "source": "Stored-record rules (T017/T018). Allow-lists mean last4, card numbers and CVV can never be stored (FR-015, FR-016). Length and size limits are placeholders: [TBD: the spec defines no limits].",
+      "rules": [
+        {
+          "id": "known-fields",
+          "path": "",
+          "checks": [{"noUnknownFields": ["id", "channelId", "cardId", "approxMonthly", "source"]}],
+          "reason": "UNKNOWN_FIELD"
+        },
+        {
+          "id": "id",
+          "path": "id",
+          "checks": [{"required": true}, {"type": "string"}, {"pattern": "[A-Za-z0-9_-]{1,40}"}],
+          "reason": "ID_INVALID"
+        },
+        {
+          "id": "channel",
+          "path": "channelId",
+          "checks": [{"required": true}, {"type": "string"}, {"pattern": "[A-Za-z0-9_-]{1,40}"}],
+          "reason": "CHANNEL_INVALID"
+        },
+        {
+          "id": "card",
+          "path": "cardId",
+          "checks": [{"type": "string"}, {"pattern": "[A-Za-z0-9_-]{1,40}"}],
+          "reason": "CARD_INVALID"
+        },
+        {
+          "id": "monthly",
+          "path": "approxMonthly",
+          "checks": [{"type": "integer"}, {"min": 0}, {"max": 1000000000}],
+          "reason": "AMOUNT_INVALID"
+        },
+        {
+          "id": "source",
+          "path": "source",
+          "checks": [{"required": true}, {"enum": ["self-reported"]}],
+          "reason": "SOURCE_INVALID"
+        }
+      ]
+    },
+    "stored-snapshot": {
+      "source": "Stored-record rules (T017/T018). Allow-lists mean last4, card numbers and CVV can never be stored (FR-015, FR-016). Length and size limits are placeholders: [TBD: the spec defines no limits].",
+      "rules": [
+        {
+          "id": "known-fields",
+          "path": "",
+          "checks": [{"noUnknownFields": ["id", "confirmedAt", "period", "channelTotals", "source", "largeItems"]}],
+          "reason": "UNKNOWN_FIELD"
+        },
+        {
+          "id": "id",
+          "path": "id",
+          "checks": [{"required": true}, {"type": "string"}, {"pattern": "[A-Za-z0-9_-]{1,40}"}],
+          "reason": "ID_INVALID"
+        },
+        {
+          "id": "confirmed",
+          "path": "confirmedAt",
+          "checks": [{"required": true}, {"type": "string"}, {"pattern": "[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])"}],
+          "reason": "DATE_INVALID"
+        },
+        {
+          "id": "period",
+          "path": "period",
+          "checks": [
+            {"required": true},
+            {"type": "object"},
+            {"noUnknownFields": ["start", "end"]},
+            {"periodOrder": ["start", "end"]}
+          ],
+          "reason": "PERIOD_INVALID"
+        },
+        {
+          "id": "totals",
+          "path": "channelTotals",
+          "checks": [{"required": true}, {"type": "array"}, {"maxItems": 100}],
+          "reason": "TOTALS_INVALID"
+        },
+        {
+          "id": "totals-item",
+          "path": "channelTotals[]",
+          "checks": [{"noUnknownFields": ["channelId", "total"]}],
+          "reason": "UNKNOWN_FIELD"
+        },
+        {
+          "id": "totals-channel",
+          "path": "channelTotals[].channelId",
+          "checks": [{"required": true}, {"type": "string"}, {"pattern": "[A-Za-z0-9_-]{1,40}"}],
+          "reason": "CHANNEL_INVALID"
+        },
+        {
+          "id": "totals-amount",
+          "path": "channelTotals[].total",
+          "checks": [{"required": true}, {"type": "integer"}, {"min": 0}, {"max": 1000000000}],
+          "reason": "AMOUNT_INVALID"
+        },
+        {
+          "id": "source",
+          "path": "source",
+          "checks": [{"required": true}, {"enum": ["llm-paste", "self-reported"]}],
+          "reason": "SOURCE_INVALID"
+        },
+        {
+          "id": "large",
+          "path": "largeItems",
+          "checks": [{"required": true}, {"type": "array"}, {"maxItems": 100}],
+          "reason": "LARGE_ITEMS_INVALID"
+        },
+        {
+          "id": "large-item",
+          "path": "largeItems[]",
+          "checks": [{"noUnknownFields": ["category", "amount"]}],
+          "reason": "UNKNOWN_FIELD"
+        },
+        {
+          "id": "large-category",
+          "path": "largeItems[].category",
+          "checks": [{"required": true}, {"type": "string"}, {"minLength": 1}, {"maxLength": 30}],
+          "reason": "CATEGORY_INVALID"
+        },
+        {
+          "id": "large-amount",
+          "path": "largeItems[].amount",
+          "checks": [{"required": true}, {"type": "integer"}, {"min": 1}, {"max": 1000000000}],
+          "reason": "AMOUNT_INVALID"
+        }
+      ]
+    },
+    "stored-settings": {
+      "source": "Stored-record rules (T017/T018). Allow-lists mean last4, card numbers and CVV can never be stored (FR-015, FR-016). Length and size limits are placeholders: [TBD: the spec defines no limits].",
+      "rules": [
+        {
+          "id": "known-fields",
+          "path": "",
+          "checks": [{"noUnknownFields": ["id", "largeItemThreshold"]}],
+          "reason": "UNKNOWN_FIELD"
+        },
+        {"id": "id", "path": "id", "checks": [{"required": true}, {"enum": ["settings"]}], "reason": "ID_INVALID"},
+        {
+          "id": "threshold",
+          "path": "largeItemThreshold",
+          "checks": [{"required": true}, {"type": "integer"}, {"min": 1}, {"max": 1000000000}],
+          "reason": "THRESHOLD_INVALID"
+        }
+      ]
     }
   }
 }
