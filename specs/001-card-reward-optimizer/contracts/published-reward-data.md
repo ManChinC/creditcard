@@ -1,0 +1,46 @@
+# Contract: 已發布的公開回饋資料（JSON）
+
+依 FR-048、AD-007：JSON 檔，含結構化欄位與 schema 版本號，公開發布，供公開版 SDK 與其他程式讀取。僅含公開資訊，不含任何使用者個人資料。檔案名稱、欄位型別、版本號格式：`[TBD: 未決定]`。
+
+## 頂層結構
+
+| 欄位 | 說明 |
+|---|---|
+| schemaVersion | schema 版本號 |
+| lastVerifiedAt | 最後查證日期 |
+| rules | 回饋規則清單 |
+
+## rules 每筆欄位
+
+欄位名稱為暫用語意名稱，非最終命名。
+
+| 欄位 | 說明 | 備註 |
+|---|---|---|
+| issuer、cardName | 發卡行與卡名 | |
+| channel | 通路類別 | |
+| paymentMethod | 支付方式 | 支援清單 `[TBD]` |
+| rewardRate | 回饋率 | |
+| rewardCap | 回饋金額上限 | 未知則為未知 |
+| threshold | 門檻 | |
+| designatedMerchants | 指定商家清單 | |
+| requiresBenefitSwitch | 是否需切換權益 | |
+| stackingStated | 官方是否載明可疊加 | |
+| couponRequired | 是否需領券 | 領券狀態由使用者本機標記，不在此檔 |
+| couponConditions、validPeriod、quota | 領券條件、有效期間、名額 | |
+| registrationCycle | 登錄週期：每週／每月／每季／活動期間一次 | 結構化欄位；「下一次開放日」由程式依此與今日日期計算，不寫入檔案 |
+| source | 官方來源連結 | 必填（FR-026） |
+| verifiedAt | 查證日期 | 必填（FR-026） |
+
+無法判斷的欄位以「官網沒有寫」或未知表示，不填推測值。
+
+## 消費端規則
+
+- 載入時須經 Validator 驗證 schema（FR-048）；驗證失敗或資料過期時，健檢不得以不完整資料給確定性結論（US3 情境 3）。
+- 公開頁面顯示最後查證日期與免責聲明（FR-036）。
+- 資料超過多久視為過期、如何提示：`[TBD: Edge Cases]`。
+- 內容完整性（是否簽章）：`[TBD: research.md 風險 3]`。
+
+## 發布規則
+
+- 由管理員確認草稿後才更新（FR-021）；已發布版本優先於草稿。
+- 發布內容僅此 JSON 與公開網頁；不得夾帶管理員程式或憑證（SC-011）。

@@ -1,0 +1,13 @@
+# 憑證與機敏檔案（FR-034：AI 憑證僅存管理員本機，不得進入版本控制或公開網站）
+.env
+*.key
+*.pem
+
+# 管理員模式本機資料
+admin-data/
+
+# 執行環境產物
+__pycache__/
+*.pyc
+.pytest_cache/
+node_modules/
