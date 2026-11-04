@@ -1,0 +1,1379 @@
+{
+  "rules": "rules/validator-rules.json",
+  "cases": [
+    {
+      "id": "minimal-rule-allowed-unknown-fields-omitted",
+      "ruleSet": "published-data",
+      "input": {
+        "schemaVersion": "1",
+        "lastVerifiedAt": "2026-11-03",
+        "rules": [
+          {
+            "issuer": "國泰",
+            "cardName": "CUBE 卡",
+            "channel": "餐飲",
+            "paymentMethod": "實體卡",
+            "tiers": [{"rate": 300}],
+            "source": "https://example.com/promo",
+            "verifiedAt": "2026-11-03"
+          }
+        ]
+      },
+      "settings": {},
+      "expect": {"decision": "allow", "failures": []}
+    },
+    {
+      "id": "full-rule-allowed",
+      "ruleSet": "published-data",
+      "input": {
+        "schemaVersion": "1",
+        "lastVerifiedAt": "2026-11-03",
+        "rules": [
+          {
+            "issuer": "富邦",
+            "cardName": "J 卡",
+            "channel": "百貨",
+            "paymentMethod": "行動支付",
+            "tiers": [{"upTo": 5000, "rate": 200}, {"rate": 500}],
+            "rewardCap": 500,
+            "threshold": 0,
+            "capGroup": "mobile-bonus",
+            "designatedMerchants": [{"name": "遠東百貨", "aliases": ["遠百"]}, {"name": "SOGO 百貨"}],
+            "requiresBenefitSwitch": false,
+            "stackingStated": true,
+            "stacksWith": ["實體卡"],
+            "couponRequired": true,
+            "couponConditions": "活動期間需登錄",
+            "validPeriod": {"start": "2026-10-01", "end": "2026-12-31"},
+            "quota": 10000,
+            "registrationCycle": {"kind": "monthly", "day": 1},
+            "source": "https://example.com/promo/j-card",
+            "verifiedAt": "2026-11-03"
+          },
+          {
+            "issuer": "國泰",
+            "cardName": "CUBE 卡",
+            "channel": "餐飲",
+            "paymentMethod": "實體卡",
+            "tiers": [{"rate": 300}],
+            "source": "https://example.com/promo",
+            "verifiedAt": "2026-11-03"
+          }
+        ]
+      },
+      "settings": {},
+      "expect": {"decision": "allow", "failures": []}
+    },
+    {
+      "id": "empty-rule-list-allowed",
+      "ruleSet": "published-data",
+      "input": {"schemaVersion": "1", "lastVerifiedAt": "2026-11-03", "rules": []},
+      "settings": {},
+      "expect": {"decision": "allow", "failures": []}
+    },
+    {
+      "id": "schema-version-2-unsupported",
+      "ruleSet": "published-data",
+      "input": {
+        "schemaVersion": "2",
+        "lastVerifiedAt": "2026-11-03",
+        "rules": [
+          {
+            "issuer": "國泰",
+            "cardName": "CUBE 卡",
+            "channel": "餐飲",
+            "paymentMethod": "實體卡",
+            "tiers": [{"rate": 300}],
+            "source": "https://example.com/promo",
+            "verifiedAt": "2026-11-03"
+          }
+        ]
+      },
+      "settings": {},
+      "expect": {
+        "decision": "deny",
+        "failures": [{"rule": "schema-version", "path": "schemaVersion", "code": "SCHEMA_VERSION_UNSUPPORTED"}]
+      }
+    },
+    {
+      "id": "schema-version-number-unsupported",
+      "ruleSet": "published-data",
+      "input": {
+        "schemaVersion": 1,
+        "lastVerifiedAt": "2026-11-03",
+        "rules": [
+          {
+            "issuer": "國泰",
+            "cardName": "CUBE 卡",
+            "channel": "餐飲",
+            "paymentMethod": "實體卡",
+            "tiers": [{"rate": 300}],
+            "source": "https://example.com/promo",
+            "verifiedAt": "2026-11-03"
+          }
+        ]
+      },
+      "settings": {},
+      "expect": {
+        "decision": "deny",
+        "failures": [{"rule": "schema-version", "path": "schemaVersion", "code": "SCHEMA_VERSION_UNSUPPORTED"}]
+      }
+    },
+    {
+      "id": "schema-version-missing",
+      "ruleSet": "published-data",
+      "input": {
+        "lastVerifiedAt": "2026-11-03",
+        "rules": [
+          {
+            "issuer": "國泰",
+            "cardName": "CUBE 卡",
+            "channel": "餐飲",
+            "paymentMethod": "實體卡",
+            "tiers": [{"rate": 300}],
+            "source": "https://example.com/promo",
+            "verifiedAt": "2026-11-03"
+          }
+        ]
+      },
+      "settings": {},
+      "expect": {
+        "decision": "deny",
+        "failures": [{"rule": "schema-version", "path": "schemaVersion", "code": "SCHEMA_VERSION_UNSUPPORTED"}]
+      }
+    },
+    {
+      "id": "last-verified-missing",
+      "ruleSet": "published-data",
+      "input": {
+        "schemaVersion": "1",
+        "rules": [
+          {
+            "issuer": "國泰",
+            "cardName": "CUBE 卡",
+            "channel": "餐飲",
+            "paymentMethod": "實體卡",
+            "tiers": [{"rate": 300}],
+            "source": "https://example.com/promo",
+            "verifiedAt": "2026-11-03"
+          }
+        ]
+      },
+      "settings": {},
+      "expect": {"decision": "deny", "failures": [{"rule": "last-verified", "path": "lastVerifiedAt", "code": "DATE_INVALID"}]}
+    },
+    {
+      "id": "last-verified-slashes",
+      "ruleSet": "published-data",
+      "input": {
+        "schemaVersion": "1",
+        "lastVerifiedAt": "2026/11/03",
+        "rules": [
+          {
+            "issuer": "國泰",
+            "cardName": "CUBE 卡",
+            "channel": "餐飲",
+            "paymentMethod": "實體卡",
+            "tiers": [{"rate": 300}],
+            "source": "https://example.com/promo",
+            "verifiedAt": "2026-11-03"
+          }
+        ]
+      },
+      "settings": {},
+      "expect": {"decision": "deny", "failures": [{"rule": "last-verified", "path": "lastVerifiedAt", "code": "DATE_INVALID"}]}
+    },
+    {
+      "id": "last-verified-with-time",
+      "ruleSet": "published-data",
+      "input": {
+        "schemaVersion": "1",
+        "lastVerifiedAt": "2026-11-03T08:00:00",
+        "rules": [
+          {
+            "issuer": "國泰",
+            "cardName": "CUBE 卡",
+            "channel": "餐飲",
+            "paymentMethod": "實體卡",
+            "tiers": [{"rate": 300}],
+            "source": "https://example.com/promo",
+            "verifiedAt": "2026-11-03"
+          }
+        ]
+      },
+      "settings": {},
+      "expect": {"decision": "deny", "failures": [{"rule": "last-verified", "path": "lastVerifiedAt", "code": "DATE_INVALID"}]}
+    },
+    {
+      "id": "rules-missing",
+      "ruleSet": "published-data",
+      "input": {"schemaVersion": "1", "lastVerifiedAt": "2026-11-03"},
+      "settings": {},
+      "expect": {
+        "decision": "deny",
+        "failures": [
+          {"rule": "rules", "path": "rules", "code": "RULES_INVALID"},
+          {"rule": "rule-issuer", "path": "rules.issuer", "code": "ISSUER_INVALID"},
+          {"rule": "rule-card-name", "path": "rules.cardName", "code": "NAME_INVALID"},
+          {"rule": "rule-channel", "path": "rules.channel", "code": "NAME_INVALID"},
+          {"rule": "rule-payment-method", "path": "rules.paymentMethod", "code": "PAYMENT_METHOD_INVALID"},
+          {"rule": "rule-tiers", "path": "rules.tiers", "code": "TIERS_INVALID"},
+          {"rule": "tier-rate", "path": "rules.tiers.rate", "code": "RATE_INVALID"},
+          {"rule": "source", "path": "rules.source", "code": "SOURCE_INVALID"},
+          {"rule": "verified-at", "path": "rules.verifiedAt", "code": "DATE_INVALID"}
+        ]
+      }
+    },
+    {
+      "id": "rules-is-object",
+      "ruleSet": "published-data",
+      "input": {"schemaVersion": "1", "lastVerifiedAt": "2026-11-03", "rules": {"a": 1}},
+      "settings": {},
+      "expect": {
+        "decision": "deny",
+        "failures": [
+          {"rule": "rules", "path": "rules", "code": "RULES_INVALID"},
+          {"rule": "rule-issuer", "path": "rules.issuer", "code": "ISSUER_INVALID"},
+          {"rule": "rule-card-name", "path": "rules.cardName", "code": "NAME_INVALID"},
+          {"rule": "rule-channel", "path": "rules.channel", "code": "NAME_INVALID"},
+          {"rule": "rule-payment-method", "path": "rules.paymentMethod", "code": "PAYMENT_METHOD_INVALID"},
+          {"rule": "rule-tiers", "path": "rules.tiers", "code": "TIERS_INVALID"},
+          {"rule": "tier-rate", "path": "rules.tiers.rate", "code": "RATE_INVALID"},
+          {"rule": "source", "path": "rules.source", "code": "SOURCE_INVALID"},
+          {"rule": "verified-at", "path": "rules.verifiedAt", "code": "DATE_INVALID"}
+        ]
+      }
+    },
+    {
+      "id": "top-level-user-data-rejected",
+      "ruleSet": "published-data",
+      "input": {
+        "schemaVersion": "1",
+        "lastVerifiedAt": "2026-11-03",
+        "rules": [
+          {
+            "issuer": "國泰",
+            "cardName": "CUBE 卡",
+            "channel": "餐飲",
+            "paymentMethod": "實體卡",
+            "tiers": [{"rate": 300}],
+            "source": "https://example.com/promo",
+            "verifiedAt": "2026-11-03"
+          }
+        ],
+        "userId": "u-1"
+      },
+      "settings": {},
+      "expect": {"decision": "deny", "failures": [{"rule": "known-fields", "path": "", "code": "UNKNOWN_FIELD"}]}
+    },
+    {
+      "id": "rule-last4-rejected",
+      "ruleSet": "published-data",
+      "input": {
+        "schemaVersion": "1",
+        "lastVerifiedAt": "2026-11-03",
+        "rules": [
+          {
+            "issuer": "國泰",
+            "cardName": "CUBE 卡",
+            "channel": "餐飲",
+            "paymentMethod": "實體卡",
+            "tiers": [{"rate": 300}],
+            "source": "https://example.com/promo",
+            "verifiedAt": "2026-11-03",
+            "last4": "1234"
+          }
+        ]
+      },
+      "settings": {},
+      "expect": {"decision": "deny", "failures": [{"rule": "rule-item", "path": "rules[0]", "code": "UNKNOWN_FIELD"}]}
+    },
+    {
+      "id": "rule-user-note-rejected",
+      "ruleSet": "published-data",
+      "input": {
+        "schemaVersion": "1",
+        "lastVerifiedAt": "2026-11-03",
+        "rules": [
+          {
+            "issuer": "國泰",
+            "cardName": "CUBE 卡",
+            "channel": "餐飲",
+            "paymentMethod": "實體卡",
+            "tiers": [{"rate": 300}],
+            "source": "https://example.com/promo",
+            "verifiedAt": "2026-11-03",
+            "userNote": "x"
+          }
+        ]
+      },
+      "settings": {},
+      "expect": {"decision": "deny", "failures": [{"rule": "rule-item", "path": "rules[0]", "code": "UNKNOWN_FIELD"}]}
+    },
+    {
+      "id": "issuer-missing",
+      "ruleSet": "published-data",
+      "input": {
+        "schemaVersion": "1",
+        "lastVerifiedAt": "2026-11-03",
+        "rules": [
+          {
+            "cardName": "CUBE 卡",
+            "channel": "餐飲",
+            "paymentMethod": "實體卡",
+            "tiers": [{"rate": 300}],
+            "source": "https://example.com/promo",
+            "verifiedAt": "2026-11-03"
+          }
+        ]
+      },
+      "settings": {},
+      "expect": {"decision": "deny", "failures": [{"rule": "rule-issuer", "path": "rules[0].issuer", "code": "ISSUER_INVALID"}]}
+    },
+    {
+      "id": "issuer-unsupported",
+      "ruleSet": "published-data",
+      "input": {
+        "schemaVersion": "1",
+        "lastVerifiedAt": "2026-11-03",
+        "rules": [
+          {
+            "issuer": "某銀行",
+            "cardName": "CUBE 卡",
+            "channel": "餐飲",
+            "paymentMethod": "實體卡",
+            "tiers": [{"rate": 300}],
+            "source": "https://example.com/promo",
+            "verifiedAt": "2026-11-03"
+          }
+        ]
+      },
+      "settings": {},
+      "expect": {"decision": "deny", "failures": [{"rule": "rule-issuer", "path": "rules[0].issuer", "code": "ISSUER_INVALID"}]}
+    },
+    {
+      "id": "card-name-markup",
+      "ruleSet": "published-data",
+      "input": {
+        "schemaVersion": "1",
+        "lastVerifiedAt": "2026-11-03",
+        "rules": [
+          {
+            "issuer": "國泰",
+            "cardName": "<b>卡</b>",
+            "channel": "餐飲",
+            "paymentMethod": "實體卡",
+            "tiers": [{"rate": 300}],
+            "source": "https://example.com/promo",
+            "verifiedAt": "2026-11-03"
+          }
+        ]
+      },
+      "settings": {},
+      "expect": {
+        "decision": "deny",
+        "failures": [{"rule": "rule-card-name", "path": "rules[0].cardName", "code": "NAME_INVALID"}]
+      }
+    },
+    {
+      "id": "card-name-card-number",
+      "ruleSet": "published-data",
+      "input": {
+        "schemaVersion": "1",
+        "lastVerifiedAt": "2026-11-03",
+        "rules": [
+          {
+            "issuer": "國泰",
+            "cardName": "4111111111111111",
+            "channel": "餐飲",
+            "paymentMethod": "實體卡",
+            "tiers": [{"rate": 300}],
+            "source": "https://example.com/promo",
+            "verifiedAt": "2026-11-03"
+          }
+        ]
+      },
+      "settings": {},
+      "expect": {
+        "decision": "deny",
+        "failures": [{"rule": "rule-card-name", "path": "rules[0].cardName", "code": "NAME_INVALID"}]
+      }
+    },
+    {
+      "id": "channel-missing",
+      "ruleSet": "published-data",
+      "input": {
+        "schemaVersion": "1",
+        "lastVerifiedAt": "2026-11-03",
+        "rules": [
+          {
+            "issuer": "國泰",
+            "cardName": "CUBE 卡",
+            "paymentMethod": "實體卡",
+            "tiers": [{"rate": 300}],
+            "source": "https://example.com/promo",
+            "verifiedAt": "2026-11-03"
+          }
+        ]
+      },
+      "settings": {},
+      "expect": {"decision": "deny", "failures": [{"rule": "rule-channel", "path": "rules[0].channel", "code": "NAME_INVALID"}]}
+    },
+    {
+      "id": "payment-method-missing",
+      "ruleSet": "published-data",
+      "input": {
+        "schemaVersion": "1",
+        "lastVerifiedAt": "2026-11-03",
+        "rules": [
+          {
+            "issuer": "國泰",
+            "cardName": "CUBE 卡",
+            "channel": "餐飲",
+            "tiers": [{"rate": 300}],
+            "source": "https://example.com/promo",
+            "verifiedAt": "2026-11-03"
+          }
+        ]
+      },
+      "settings": {},
+      "expect": {
+        "decision": "deny",
+        "failures": [{"rule": "rule-payment-method", "path": "rules[0].paymentMethod", "code": "PAYMENT_METHOD_INVALID"}]
+      }
+    },
+    {
+      "id": "payment-method-free-text-allowed",
+      "ruleSet": "published-data",
+      "input": {
+        "schemaVersion": "1",
+        "lastVerifiedAt": "2026-11-03",
+        "rules": [
+          {
+            "issuer": "國泰",
+            "cardName": "CUBE 卡",
+            "channel": "餐飲",
+            "paymentMethod": "某聯名支付 App",
+            "tiers": [{"rate": 300}],
+            "source": "https://example.com/promo",
+            "verifiedAt": "2026-11-03"
+          }
+        ]
+      },
+      "settings": {},
+      "expect": {"decision": "allow", "failures": []}
+    },
+    {
+      "id": "tiers-missing",
+      "ruleSet": "published-data",
+      "input": {
+        "schemaVersion": "1",
+        "lastVerifiedAt": "2026-11-03",
+        "rules": [
+          {
+            "issuer": "國泰",
+            "cardName": "CUBE 卡",
+            "channel": "餐飲",
+            "paymentMethod": "實體卡",
+            "source": "https://example.com/promo",
+            "verifiedAt": "2026-11-03"
+          }
+        ]
+      },
+      "settings": {},
+      "expect": {
+        "decision": "deny",
+        "failures": [
+          {"rule": "rule-tiers", "path": "rules[0].tiers", "code": "TIERS_INVALID"},
+          {"rule": "tier-rate", "path": "rules[0].tiers.rate", "code": "RATE_INVALID"}
+        ]
+      }
+    },
+    {
+      "id": "tiers-not-array",
+      "ruleSet": "published-data",
+      "input": {
+        "schemaVersion": "1",
+        "lastVerifiedAt": "2026-11-03",
+        "rules": [
+          {
+            "issuer": "國泰",
+            "cardName": "CUBE 卡",
+            "channel": "餐飲",
+            "paymentMethod": "實體卡",
+            "tiers": {"rate": 300},
+            "source": "https://example.com/promo",
+            "verifiedAt": "2026-11-03"
+          }
+        ]
+      },
+      "settings": {},
+      "expect": {
+        "decision": "deny",
+        "failures": [
+          {"rule": "rule-tiers", "path": "rules[0].tiers", "code": "TIERS_INVALID"},
+          {"rule": "tier-rate", "path": "rules[0].tiers.rate", "code": "RATE_INVALID"}
+        ]
+      }
+    },
+    {
+      "id": "rate-fractional",
+      "ruleSet": "published-data",
+      "input": {
+        "schemaVersion": "1",
+        "lastVerifiedAt": "2026-11-03",
+        "rules": [
+          {
+            "issuer": "國泰",
+            "cardName": "CUBE 卡",
+            "channel": "餐飲",
+            "paymentMethod": "實體卡",
+            "tiers": [{"rate": 3.5}],
+            "source": "https://example.com/promo",
+            "verifiedAt": "2026-11-03"
+          }
+        ]
+      },
+      "settings": {},
+      "expect": {
+        "decision": "deny",
+        "failures": [{"rule": "tier-rate", "path": "rules[0].tiers[0].rate", "code": "RATE_INVALID"}]
+      }
+    },
+    {
+      "id": "rate-over-100-percent",
+      "ruleSet": "published-data",
+      "input": {
+        "schemaVersion": "1",
+        "lastVerifiedAt": "2026-11-03",
+        "rules": [
+          {
+            "issuer": "國泰",
+            "cardName": "CUBE 卡",
+            "channel": "餐飲",
+            "paymentMethod": "實體卡",
+            "tiers": [{"rate": 10001}],
+            "source": "https://example.com/promo",
+            "verifiedAt": "2026-11-03"
+          }
+        ]
+      },
+      "settings": {},
+      "expect": {
+        "decision": "deny",
+        "failures": [{"rule": "tier-rate", "path": "rules[0].tiers[0].rate", "code": "RATE_INVALID"}]
+      }
+    },
+    {
+      "id": "rate-negative",
+      "ruleSet": "published-data",
+      "input": {
+        "schemaVersion": "1",
+        "lastVerifiedAt": "2026-11-03",
+        "rules": [
+          {
+            "issuer": "國泰",
+            "cardName": "CUBE 卡",
+            "channel": "餐飲",
+            "paymentMethod": "實體卡",
+            "tiers": [{"rate": -1}],
+            "source": "https://example.com/promo",
+            "verifiedAt": "2026-11-03"
+          }
+        ]
+      },
+      "settings": {},
+      "expect": {
+        "decision": "deny",
+        "failures": [{"rule": "tier-rate", "path": "rules[0].tiers[0].rate", "code": "RATE_INVALID"}]
+      }
+    },
+    {
+      "id": "rate-string",
+      "ruleSet": "published-data",
+      "input": {
+        "schemaVersion": "1",
+        "lastVerifiedAt": "2026-11-03",
+        "rules": [
+          {
+            "issuer": "國泰",
+            "cardName": "CUBE 卡",
+            "channel": "餐飲",
+            "paymentMethod": "實體卡",
+            "tiers": [{"rate": "300"}],
+            "source": "https://example.com/promo",
+            "verifiedAt": "2026-11-03"
+          }
+        ]
+      },
+      "settings": {},
+      "expect": {
+        "decision": "deny",
+        "failures": [{"rule": "tier-rate", "path": "rules[0].tiers[0].rate", "code": "RATE_INVALID"}]
+      }
+    },
+    {
+      "id": "rate-missing-in-second-tier",
+      "ruleSet": "published-data",
+      "input": {
+        "schemaVersion": "1",
+        "lastVerifiedAt": "2026-11-03",
+        "rules": [
+          {
+            "issuer": "國泰",
+            "cardName": "CUBE 卡",
+            "channel": "餐飲",
+            "paymentMethod": "實體卡",
+            "tiers": [{"upTo": 5000, "rate": 200}, {}],
+            "source": "https://example.com/promo",
+            "verifiedAt": "2026-11-03"
+          }
+        ]
+      },
+      "settings": {},
+      "expect": {
+        "decision": "deny",
+        "failures": [{"rule": "tier-rate", "path": "rules[0].tiers[1].rate", "code": "RATE_INVALID"}]
+      }
+    },
+    {
+      "id": "tier-bound-zero",
+      "ruleSet": "published-data",
+      "input": {
+        "schemaVersion": "1",
+        "lastVerifiedAt": "2026-11-03",
+        "rules": [
+          {
+            "issuer": "國泰",
+            "cardName": "CUBE 卡",
+            "channel": "餐飲",
+            "paymentMethod": "實體卡",
+            "tiers": [{"upTo": 0, "rate": 200}, {"rate": 300}],
+            "source": "https://example.com/promo",
+            "verifiedAt": "2026-11-03"
+          }
+        ]
+      },
+      "settings": {},
+      "expect": {
+        "decision": "deny",
+        "failures": [{"rule": "tier-up-to", "path": "rules[0].tiers[0].upTo", "code": "TIER_BOUND_INVALID"}]
+      }
+    },
+    {
+      "id": "tier-extra-field",
+      "ruleSet": "published-data",
+      "input": {
+        "schemaVersion": "1",
+        "lastVerifiedAt": "2026-11-03",
+        "rules": [
+          {
+            "issuer": "國泰",
+            "cardName": "CUBE 卡",
+            "channel": "餐飲",
+            "paymentMethod": "實體卡",
+            "tiers": [{"rate": 200, "bonus": 1}],
+            "source": "https://example.com/promo",
+            "verifiedAt": "2026-11-03"
+          }
+        ]
+      },
+      "settings": {},
+      "expect": {"decision": "deny", "failures": [{"rule": "tier-item", "path": "rules[0].tiers[0]", "code": "UNKNOWN_FIELD"}]}
+    },
+    {
+      "id": "cap-zero",
+      "ruleSet": "published-data",
+      "input": {
+        "schemaVersion": "1",
+        "lastVerifiedAt": "2026-11-03",
+        "rules": [
+          {
+            "issuer": "國泰",
+            "cardName": "CUBE 卡",
+            "channel": "餐飲",
+            "paymentMethod": "實體卡",
+            "tiers": [{"rate": 300}],
+            "source": "https://example.com/promo",
+            "verifiedAt": "2026-11-03",
+            "rewardCap": 0
+          }
+        ]
+      },
+      "settings": {},
+      "expect": {"decision": "deny", "failures": [{"rule": "reward-cap", "path": "rules[0].rewardCap", "code": "CAP_INVALID"}]}
+    },
+    {
+      "id": "cap-negative",
+      "ruleSet": "published-data",
+      "input": {
+        "schemaVersion": "1",
+        "lastVerifiedAt": "2026-11-03",
+        "rules": [
+          {
+            "issuer": "國泰",
+            "cardName": "CUBE 卡",
+            "channel": "餐飲",
+            "paymentMethod": "實體卡",
+            "tiers": [{"rate": 300}],
+            "source": "https://example.com/promo",
+            "verifiedAt": "2026-11-03",
+            "rewardCap": -5
+          }
+        ]
+      },
+      "settings": {},
+      "expect": {"decision": "deny", "failures": [{"rule": "reward-cap", "path": "rules[0].rewardCap", "code": "CAP_INVALID"}]}
+    },
+    {
+      "id": "cap-fractional",
+      "ruleSet": "published-data",
+      "input": {
+        "schemaVersion": "1",
+        "lastVerifiedAt": "2026-11-03",
+        "rules": [
+          {
+            "issuer": "國泰",
+            "cardName": "CUBE 卡",
+            "channel": "餐飲",
+            "paymentMethod": "實體卡",
+            "tiers": [{"rate": 300}],
+            "source": "https://example.com/promo",
+            "verifiedAt": "2026-11-03",
+            "rewardCap": 100.5
+          }
+        ]
+      },
+      "settings": {},
+      "expect": {"decision": "deny", "failures": [{"rule": "reward-cap", "path": "rules[0].rewardCap", "code": "CAP_INVALID"}]}
+    },
+    {
+      "id": "cap-string",
+      "ruleSet": "published-data",
+      "input": {
+        "schemaVersion": "1",
+        "lastVerifiedAt": "2026-11-03",
+        "rules": [
+          {
+            "issuer": "國泰",
+            "cardName": "CUBE 卡",
+            "channel": "餐飲",
+            "paymentMethod": "實體卡",
+            "tiers": [{"rate": 300}],
+            "source": "https://example.com/promo",
+            "verifiedAt": "2026-11-03",
+            "rewardCap": "500"
+          }
+        ]
+      },
+      "settings": {},
+      "expect": {"decision": "deny", "failures": [{"rule": "reward-cap", "path": "rules[0].rewardCap", "code": "CAP_INVALID"}]}
+    },
+    {
+      "id": "no-cap-flag-allowed",
+      "ruleSet": "published-data",
+      "input": {
+        "schemaVersion": "1",
+        "lastVerifiedAt": "2026-11-03",
+        "rules": [
+          {
+            "issuer": "國泰",
+            "cardName": "CUBE 卡",
+            "channel": "餐飲",
+            "paymentMethod": "實體卡",
+            "tiers": [{"rate": 300}],
+            "source": "https://example.com/promo",
+            "verifiedAt": "2026-11-03",
+            "noCap": true
+          }
+        ]
+      },
+      "settings": {},
+      "expect": {"decision": "allow", "failures": []}
+    },
+    {
+      "id": "no-cap-as-string",
+      "ruleSet": "published-data",
+      "input": {
+        "schemaVersion": "1",
+        "lastVerifiedAt": "2026-11-03",
+        "rules": [
+          {
+            "issuer": "國泰",
+            "cardName": "CUBE 卡",
+            "channel": "餐飲",
+            "paymentMethod": "實體卡",
+            "tiers": [{"rate": 300}],
+            "source": "https://example.com/promo",
+            "verifiedAt": "2026-11-03",
+            "noCap": "yes"
+          }
+        ]
+      },
+      "settings": {},
+      "expect": {"decision": "deny", "failures": [{"rule": "no-cap", "path": "rules[0].noCap", "code": "FLAG_INVALID"}]}
+    },
+    {
+      "id": "threshold-negative",
+      "ruleSet": "published-data",
+      "input": {
+        "schemaVersion": "1",
+        "lastVerifiedAt": "2026-11-03",
+        "rules": [
+          {
+            "issuer": "國泰",
+            "cardName": "CUBE 卡",
+            "channel": "餐飲",
+            "paymentMethod": "實體卡",
+            "tiers": [{"rate": 300}],
+            "source": "https://example.com/promo",
+            "verifiedAt": "2026-11-03",
+            "threshold": -1
+          }
+        ]
+      },
+      "settings": {},
+      "expect": {
+        "decision": "deny",
+        "failures": [{"rule": "threshold", "path": "rules[0].threshold", "code": "THRESHOLD_INVALID"}]
+      }
+    },
+    {
+      "id": "threshold-zero-allowed",
+      "ruleSet": "published-data",
+      "input": {
+        "schemaVersion": "1",
+        "lastVerifiedAt": "2026-11-03",
+        "rules": [
+          {
+            "issuer": "國泰",
+            "cardName": "CUBE 卡",
+            "channel": "餐飲",
+            "paymentMethod": "實體卡",
+            "tiers": [{"rate": 300}],
+            "source": "https://example.com/promo",
+            "verifiedAt": "2026-11-03",
+            "threshold": 0
+          }
+        ]
+      },
+      "settings": {},
+      "expect": {"decision": "allow", "failures": []}
+    },
+    {
+      "id": "benefit-switch-as-string",
+      "ruleSet": "published-data",
+      "input": {
+        "schemaVersion": "1",
+        "lastVerifiedAt": "2026-11-03",
+        "rules": [
+          {
+            "issuer": "國泰",
+            "cardName": "CUBE 卡",
+            "channel": "餐飲",
+            "paymentMethod": "實體卡",
+            "tiers": [{"rate": 300}],
+            "source": "https://example.com/promo",
+            "verifiedAt": "2026-11-03",
+            "requiresBenefitSwitch": "false"
+          }
+        ]
+      },
+      "settings": {},
+      "expect": {
+        "decision": "deny",
+        "failures": [{"rule": "benefit-switch", "path": "rules[0].requiresBenefitSwitch", "code": "FLAG_INVALID"}]
+      }
+    },
+    {
+      "id": "stacking-stated-as-number",
+      "ruleSet": "published-data",
+      "input": {
+        "schemaVersion": "1",
+        "lastVerifiedAt": "2026-11-03",
+        "rules": [
+          {
+            "issuer": "國泰",
+            "cardName": "CUBE 卡",
+            "channel": "餐飲",
+            "paymentMethod": "實體卡",
+            "tiers": [{"rate": 300}],
+            "source": "https://example.com/promo",
+            "verifiedAt": "2026-11-03",
+            "stackingStated": 1
+          }
+        ]
+      },
+      "settings": {},
+      "expect": {
+        "decision": "deny",
+        "failures": [{"rule": "stacking-stated", "path": "rules[0].stackingStated", "code": "FLAG_INVALID"}]
+      }
+    },
+    {
+      "id": "stacks-with-markup",
+      "ruleSet": "published-data",
+      "input": {
+        "schemaVersion": "1",
+        "lastVerifiedAt": "2026-11-03",
+        "rules": [
+          {
+            "issuer": "國泰",
+            "cardName": "CUBE 卡",
+            "channel": "餐飲",
+            "paymentMethod": "實體卡",
+            "tiers": [{"rate": 300}],
+            "source": "https://example.com/promo",
+            "verifiedAt": "2026-11-03",
+            "stackingStated": true,
+            "stacksWith": ["<i>x</i>"]
+          }
+        ]
+      },
+      "settings": {},
+      "expect": {
+        "decision": "deny",
+        "failures": [{"rule": "stacks-with-item", "path": "rules[0].stacksWith[0]", "code": "STACKS_WITH_INVALID"}]
+      }
+    },
+    {
+      "id": "merchant-name-markup",
+      "ruleSet": "published-data",
+      "input": {
+        "schemaVersion": "1",
+        "lastVerifiedAt": "2026-11-03",
+        "rules": [
+          {
+            "issuer": "國泰",
+            "cardName": "CUBE 卡",
+            "channel": "餐飲",
+            "paymentMethod": "實體卡",
+            "tiers": [{"rate": 300}],
+            "source": "https://example.com/promo",
+            "verifiedAt": "2026-11-03",
+            "designatedMerchants": [{"name": "<script>alert(1)</script>"}]
+          }
+        ]
+      },
+      "settings": {},
+      "expect": {
+        "decision": "deny",
+        "failures": [{"rule": "merchant-name", "path": "rules[0].designatedMerchants[0].name", "code": "MERCHANT_INVALID"}]
+      }
+    },
+    {
+      "id": "merchant-alias-markup",
+      "ruleSet": "published-data",
+      "input": {
+        "schemaVersion": "1",
+        "lastVerifiedAt": "2026-11-03",
+        "rules": [
+          {
+            "issuer": "國泰",
+            "cardName": "CUBE 卡",
+            "channel": "餐飲",
+            "paymentMethod": "實體卡",
+            "tiers": [{"rate": 300}],
+            "source": "https://example.com/promo",
+            "verifiedAt": "2026-11-03",
+            "designatedMerchants": [{"name": "遠東百貨", "aliases": ["遠百", "<b>"]}]
+          }
+        ]
+      },
+      "settings": {},
+      "expect": {
+        "decision": "deny",
+        "failures": [{"rule": "merchant-alias", "path": "rules[0].designatedMerchants[0].aliases[1]", "code": "MERCHANT_INVALID"}]
+      }
+    },
+    {
+      "id": "merchant-extra-field",
+      "ruleSet": "published-data",
+      "input": {
+        "schemaVersion": "1",
+        "lastVerifiedAt": "2026-11-03",
+        "rules": [
+          {
+            "issuer": "國泰",
+            "cardName": "CUBE 卡",
+            "channel": "餐飲",
+            "paymentMethod": "實體卡",
+            "tiers": [{"rate": 300}],
+            "source": "https://example.com/promo",
+            "verifiedAt": "2026-11-03",
+            "designatedMerchants": [{"name": "遠東百貨", "phone": "02"}]
+          }
+        ]
+      },
+      "settings": {},
+      "expect": {
+        "decision": "deny",
+        "failures": [{"rule": "merchant-item", "path": "rules[0].designatedMerchants[0]", "code": "UNKNOWN_FIELD"}]
+      }
+    },
+    {
+      "id": "merchants-empty-list-allowed",
+      "ruleSet": "published-data",
+      "input": {
+        "schemaVersion": "1",
+        "lastVerifiedAt": "2026-11-03",
+        "rules": [
+          {
+            "issuer": "國泰",
+            "cardName": "CUBE 卡",
+            "channel": "餐飲",
+            "paymentMethod": "實體卡",
+            "tiers": [{"rate": 300}],
+            "source": "https://example.com/promo",
+            "verifiedAt": "2026-11-03",
+            "designatedMerchants": []
+          }
+        ]
+      },
+      "settings": {},
+      "expect": {"decision": "allow", "failures": []}
+    },
+    {
+      "id": "coupon-required-as-string",
+      "ruleSet": "published-data",
+      "input": {
+        "schemaVersion": "1",
+        "lastVerifiedAt": "2026-11-03",
+        "rules": [
+          {
+            "issuer": "國泰",
+            "cardName": "CUBE 卡",
+            "channel": "餐飲",
+            "paymentMethod": "實體卡",
+            "tiers": [{"rate": 300}],
+            "source": "https://example.com/promo",
+            "verifiedAt": "2026-11-03",
+            "couponRequired": "true"
+          }
+        ]
+      },
+      "settings": {},
+      "expect": {
+        "decision": "deny",
+        "failures": [{"rule": "coupon-required", "path": "rules[0].couponRequired", "code": "FLAG_INVALID"}]
+      }
+    },
+    {
+      "id": "cycle-weekday-8",
+      "ruleSet": "published-data",
+      "input": {
+        "schemaVersion": "1",
+        "lastVerifiedAt": "2026-11-03",
+        "rules": [
+          {
+            "issuer": "國泰",
+            "cardName": "CUBE 卡",
+            "channel": "餐飲",
+            "paymentMethod": "實體卡",
+            "tiers": [{"rate": 300}],
+            "source": "https://example.com/promo",
+            "verifiedAt": "2026-11-03",
+            "registrationCycle": {"kind": "weekly", "weekday": 8}
+          }
+        ]
+      },
+      "settings": {},
+      "expect": {
+        "decision": "deny",
+        "failures": [{"rule": "cycle-weekday", "path": "rules[0].registrationCycle.weekday", "code": "CYCLE_INVALID"}]
+      }
+    },
+    {
+      "id": "cycle-day-29",
+      "ruleSet": "published-data",
+      "input": {
+        "schemaVersion": "1",
+        "lastVerifiedAt": "2026-11-03",
+        "rules": [
+          {
+            "issuer": "國泰",
+            "cardName": "CUBE 卡",
+            "channel": "餐飲",
+            "paymentMethod": "實體卡",
+            "tiers": [{"rate": 300}],
+            "source": "https://example.com/promo",
+            "verifiedAt": "2026-11-03",
+            "registrationCycle": {"kind": "monthly", "day": 29}
+          }
+        ]
+      },
+      "settings": {},
+      "expect": {
+        "decision": "deny",
+        "failures": [{"rule": "cycle-day", "path": "rules[0].registrationCycle.day", "code": "CYCLE_INVALID"}]
+      }
+    },
+    {
+      "id": "cycle-month-of-quarter-4",
+      "ruleSet": "published-data",
+      "input": {
+        "schemaVersion": "1",
+        "lastVerifiedAt": "2026-11-03",
+        "rules": [
+          {
+            "issuer": "國泰",
+            "cardName": "CUBE 卡",
+            "channel": "餐飲",
+            "paymentMethod": "實體卡",
+            "tiers": [{"rate": 300}],
+            "source": "https://example.com/promo",
+            "verifiedAt": "2026-11-03",
+            "registrationCycle": {"kind": "quarterly", "monthOfQuarter": 4, "day": 1}
+          }
+        ]
+      },
+      "settings": {},
+      "expect": {
+        "decision": "deny",
+        "failures": [
+          {
+            "rule": "cycle-month-of-quarter",
+            "path": "rules[0].registrationCycle.monthOfQuarter",
+            "code": "CYCLE_INVALID"
+          }
+        ]
+      }
+    },
+    {
+      "id": "cycle-kind-unknown",
+      "ruleSet": "published-data",
+      "input": {
+        "schemaVersion": "1",
+        "lastVerifiedAt": "2026-11-03",
+        "rules": [
+          {
+            "issuer": "國泰",
+            "cardName": "CUBE 卡",
+            "channel": "餐飲",
+            "paymentMethod": "實體卡",
+            "tiers": [{"rate": 300}],
+            "source": "https://example.com/promo",
+            "verifiedAt": "2026-11-03",
+            "registrationCycle": {"kind": "daily"}
+          }
+        ]
+      },
+      "settings": {},
+      "expect": {
+        "decision": "deny",
+        "failures": [{"rule": "cycle-kind", "path": "rules[0].registrationCycle.kind", "code": "CYCLE_INVALID"}]
+      }
+    },
+    {
+      "id": "cycle-opens-on-bad-date",
+      "ruleSet": "published-data",
+      "input": {
+        "schemaVersion": "1",
+        "lastVerifiedAt": "2026-11-03",
+        "rules": [
+          {
+            "issuer": "國泰",
+            "cardName": "CUBE 卡",
+            "channel": "餐飲",
+            "paymentMethod": "實體卡",
+            "tiers": [{"rate": 300}],
+            "source": "https://example.com/promo",
+            "verifiedAt": "2026-11-03",
+            "registrationCycle": {"kind": "once", "opensOn": "12/01", "closesOn": "2026-12-31"}
+          }
+        ]
+      },
+      "settings": {},
+      "expect": {
+        "decision": "deny",
+        "failures": [{"rule": "cycle-opens-on", "path": "rules[0].registrationCycle.opensOn", "code": "CYCLE_INVALID"}]
+      }
+    },
+    {
+      "id": "cycle-once-allowed",
+      "ruleSet": "published-data",
+      "input": {
+        "schemaVersion": "1",
+        "lastVerifiedAt": "2026-11-03",
+        "rules": [
+          {
+            "issuer": "國泰",
+            "cardName": "CUBE 卡",
+            "channel": "餐飲",
+            "paymentMethod": "實體卡",
+            "tiers": [{"rate": 300}],
+            "source": "https://example.com/promo",
+            "verifiedAt": "2026-11-03",
+            "registrationCycle": {"kind": "once", "opensOn": "2026-12-01", "closesOn": "2026-12-31"}
+          }
+        ]
+      },
+      "settings": {},
+      "expect": {"decision": "allow", "failures": []}
+    },
+    {
+      "id": "quota-zero",
+      "ruleSet": "published-data",
+      "input": {
+        "schemaVersion": "1",
+        "lastVerifiedAt": "2026-11-03",
+        "rules": [
+          {
+            "issuer": "國泰",
+            "cardName": "CUBE 卡",
+            "channel": "餐飲",
+            "paymentMethod": "實體卡",
+            "tiers": [{"rate": 300}],
+            "source": "https://example.com/promo",
+            "verifiedAt": "2026-11-03",
+            "quota": 0
+          }
+        ]
+      },
+      "settings": {},
+      "expect": {"decision": "deny", "failures": [{"rule": "quota", "path": "rules[0].quota", "code": "COUPON_INVALID"}]}
+    },
+    {
+      "id": "source-missing",
+      "ruleSet": "published-data",
+      "input": {
+        "schemaVersion": "1",
+        "lastVerifiedAt": "2026-11-03",
+        "rules": [
+          {
+            "issuer": "國泰",
+            "cardName": "CUBE 卡",
+            "channel": "餐飲",
+            "paymentMethod": "實體卡",
+            "tiers": [{"rate": 300}],
+            "verifiedAt": "2026-11-03"
+          }
+        ]
+      },
+      "settings": {},
+      "expect": {"decision": "deny", "failures": [{"rule": "source", "path": "rules[0].source", "code": "SOURCE_INVALID"}]}
+    },
+    {
+      "id": "source-http-rejected",
+      "ruleSet": "published-data",
+      "input": {
+        "schemaVersion": "1",
+        "lastVerifiedAt": "2026-11-03",
+        "rules": [
+          {
+            "issuer": "國泰",
+            "cardName": "CUBE 卡",
+            "channel": "餐飲",
+            "paymentMethod": "實體卡",
+            "tiers": [{"rate": 300}],
+            "source": "http://example.com/promo",
+            "verifiedAt": "2026-11-03"
+          }
+        ]
+      },
+      "settings": {},
+      "expect": {"decision": "deny", "failures": [{"rule": "source", "path": "rules[0].source", "code": "SOURCE_INVALID"}]}
+    },
+    {
+      "id": "source-javascript-rejected",
+      "ruleSet": "published-data",
+      "input": {
+        "schemaVersion": "1",
+        "lastVerifiedAt": "2026-11-03",
+        "rules": [
+          {
+            "issuer": "國泰",
+            "cardName": "CUBE 卡",
+            "channel": "餐飲",
+            "paymentMethod": "實體卡",
+            "tiers": [{"rate": 300}],
+            "source": "javascript:alert(1)",
+            "verifiedAt": "2026-11-03"
+          }
+        ]
+      },
+      "settings": {},
+      "expect": {"decision": "deny", "failures": [{"rule": "source", "path": "rules[0].source", "code": "SOURCE_INVALID"}]}
+    },
+    {
+      "id": "source-with-markup-rejected",
+      "ruleSet": "published-data",
+      "input": {
+        "schemaVersion": "1",
+        "lastVerifiedAt": "2026-11-03",
+        "rules": [
+          {
+            "issuer": "國泰",
+            "cardName": "CUBE 卡",
+            "channel": "餐飲",
+            "paymentMethod": "實體卡",
+            "tiers": [{"rate": 300}],
+            "source": "https://example.com/<script>",
+            "verifiedAt": "2026-11-03"
+          }
+        ]
+      },
+      "settings": {},
+      "expect": {"decision": "deny", "failures": [{"rule": "source", "path": "rules[0].source", "code": "SOURCE_INVALID"}]}
+    },
+    {
+      "id": "verified-at-missing",
+      "ruleSet": "published-data",
+      "input": {
+        "schemaVersion": "1",
+        "lastVerifiedAt": "2026-11-03",
+        "rules": [
+          {
+            "issuer": "國泰",
+            "cardName": "CUBE 卡",
+            "channel": "餐飲",
+            "paymentMethod": "實體卡",
+            "tiers": [{"rate": 300}],
+            "source": "https://example.com/promo"
+          }
+        ]
+      },
+      "settings": {},
+      "expect": {
+        "decision": "deny",
+        "failures": [{"rule": "verified-at", "path": "rules[0].verifiedAt", "code": "DATE_INVALID"}]
+      }
+    },
+    {
+      "id": "two-rules-each-reported",
+      "ruleSet": "published-data",
+      "input": {
+        "schemaVersion": "1",
+        "lastVerifiedAt": "2026-11-03",
+        "rules": [
+          {
+            "issuer": "國泰",
+            "cardName": "CUBE 卡",
+            "channel": "餐飲",
+            "paymentMethod": "實體卡",
+            "tiers": [{"rate": 3.5}],
+            "source": "https://example.com/promo",
+            "verifiedAt": "2026-11-03"
+          },
+          {
+            "issuer": "某銀行",
+            "cardName": "CUBE 卡",
+            "channel": "餐飲",
+            "paymentMethod": "實體卡",
+            "tiers": [{"rate": 300}],
+            "source": "https://example.com/promo",
+            "verifiedAt": "2026-11-03"
+          }
+        ]
+      },
+      "settings": {},
+      "expect": {
+        "decision": "deny",
+        "failures": [
+          {"rule": "rule-issuer", "path": "rules[1].issuer", "code": "ISSUER_INVALID"},
+          {"rule": "tier-rate", "path": "rules[0].tiers[0].rate", "code": "RATE_INVALID"}
+        ]
+      }
+    }
+  ]
+}

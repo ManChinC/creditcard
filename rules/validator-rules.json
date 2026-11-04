@@ -214,7 +214,301 @@
         }
       ]
     },
-    "published-data": {"source": "specs/001-card-reward-optimizer/contracts/published-reward-data.md", "rules": []},
+    "published-data": {
+      "source": "specs/001-card-reward-optimizer/contracts/published-reward-data.md, data-model.md (RewardRule). Absent optional field = unknown; limits are placeholders [TBD: spec does not define them].",
+      "rules": [
+        {
+          "id": "known-fields",
+          "path": "",
+          "checks": [{"noUnknownFields": ["schemaVersion", "lastVerifiedAt", "rules"]}],
+          "reason": "UNKNOWN_FIELD"
+        },
+        {
+          "id": "schema-version",
+          "path": "schemaVersion",
+          "checks": [{"required": true}, {"enum": ["1"]}],
+          "reason": "SCHEMA_VERSION_UNSUPPORTED"
+        },
+        {
+          "id": "last-verified",
+          "path": "lastVerifiedAt",
+          "checks": [{"required": true}, {"type": "string"}, {"pattern": "[0-9]{4}-[0-9]{2}-[0-9]{2}"}],
+          "reason": "DATE_INVALID"
+        },
+        {
+          "id": "rules",
+          "path": "rules",
+          "checks": [{"required": true}, {"type": "array"}, {"maxItems": 5000}],
+          "reason": "RULES_INVALID"
+        },
+        {
+          "id": "rule-item",
+          "path": "rules[]",
+          "checks": [
+            {
+              "noUnknownFields": [
+                "issuer",
+                "cardName",
+                "channel",
+                "paymentMethod",
+                "tiers",
+                "rewardCap",
+                "noCap",
+                "threshold",
+                "capGroup",
+                "designatedMerchants",
+                "requiresBenefitSwitch",
+                "stackingStated",
+                "stacksWith",
+                "couponRequired",
+                "couponConditions",
+                "validPeriod",
+                "quota",
+                "registrationCycle",
+                "source",
+                "verifiedAt"
+              ]
+            }
+          ],
+          "reason": "UNKNOWN_FIELD"
+        },
+        {
+          "id": "rule-issuer",
+          "path": "rules[].issuer",
+          "checks": [{"required": true}, {"enum": ["國泰", "永豐", "富邦", "台新"]}],
+          "reason": "ISSUER_INVALID"
+        },
+        {
+          "id": "rule-card-name",
+          "path": "rules[].cardName",
+          "checks": [
+            {"required": true},
+            {"type": "string"},
+            {"minLength": 1},
+            {"maxLength": 40},
+            {"plainText": true},
+            {"noCardNumber": true}
+          ],
+          "reason": "NAME_INVALID"
+        },
+        {
+          "id": "rule-channel",
+          "path": "rules[].channel",
+          "checks": [
+            {"required": true},
+            {"type": "string"},
+            {"minLength": 1},
+            {"maxLength": 30},
+            {"plainText": true},
+            {"noCardNumber": true}
+          ],
+          "reason": "NAME_INVALID"
+        },
+        {
+          "id": "rule-payment-method",
+          "path": "rules[].paymentMethod",
+          "checks": [
+            {"required": true},
+            {"type": "string"},
+            {"minLength": 1},
+            {"maxLength": 30},
+            {"plainText": true},
+            {"noCardNumber": true}
+          ],
+          "reason": "PAYMENT_METHOD_INVALID"
+        },
+        {
+          "id": "rule-tiers",
+          "path": "rules[].tiers",
+          "checks": [{"required": true}, {"type": "array"}, {"maxItems": 20}],
+          "reason": "TIERS_INVALID"
+        },
+        {
+          "id": "tier-item",
+          "path": "rules[].tiers[]",
+          "checks": [{"noUnknownFields": ["upTo", "rate"]}],
+          "reason": "UNKNOWN_FIELD"
+        },
+        {
+          "id": "tier-rate",
+          "path": "rules[].tiers[].rate",
+          "checks": [{"required": true}, {"type": "integer"}, {"min": 0}, {"max": 10000}],
+          "reason": "RATE_INVALID"
+        },
+        {
+          "id": "tier-up-to",
+          "path": "rules[].tiers[].upTo",
+          "checks": [{"type": "integer"}, {"min": 1}, {"max": 1000000000}],
+          "reason": "TIER_BOUND_INVALID"
+        },
+        {
+          "id": "reward-cap",
+          "path": "rules[].rewardCap",
+          "checks": [{"type": "integer"}, {"min": 1}, {"max": 1000000000}],
+          "reason": "CAP_INVALID"
+        },
+        {"id": "no-cap", "path": "rules[].noCap", "checks": [{"enum": [true, false]}], "reason": "FLAG_INVALID"},
+        {
+          "id": "threshold",
+          "path": "rules[].threshold",
+          "checks": [{"type": "integer"}, {"min": 0}, {"max": 1000000000}],
+          "reason": "THRESHOLD_INVALID"
+        },
+        {
+          "id": "cap-group",
+          "path": "rules[].capGroup",
+          "checks": [{"type": "string"}, {"minLength": 1}, {"maxLength": 40}, {"plainText": true}, {"noCardNumber": true}],
+          "reason": "CAP_GROUP_INVALID"
+        },
+        {
+          "id": "designated",
+          "path": "rules[].designatedMerchants",
+          "checks": [{"type": "array"}, {"maxItems": 200}],
+          "reason": "MERCHANTS_INVALID"
+        },
+        {
+          "id": "merchant-item",
+          "path": "rules[].designatedMerchants[]",
+          "checks": [{"noUnknownFields": ["name", "aliases"]}],
+          "reason": "UNKNOWN_FIELD"
+        },
+        {
+          "id": "merchant-name",
+          "path": "rules[].designatedMerchants[].name",
+          "checks": [{"type": "string"}, {"minLength": 1}, {"maxLength": 40}, {"plainText": true}, {"noCardNumber": true}],
+          "reason": "MERCHANT_INVALID"
+        },
+        {
+          "id": "merchant-aliases",
+          "path": "rules[].designatedMerchants[].aliases",
+          "checks": [{"type": "array"}, {"maxItems": 20}],
+          "reason": "MERCHANT_INVALID"
+        },
+        {
+          "id": "merchant-alias",
+          "path": "rules[].designatedMerchants[].aliases[]",
+          "checks": [{"type": "string"}, {"minLength": 1}, {"maxLength": 40}, {"plainText": true}, {"noCardNumber": true}],
+          "reason": "MERCHANT_INVALID"
+        },
+        {
+          "id": "benefit-switch",
+          "path": "rules[].requiresBenefitSwitch",
+          "checks": [{"enum": [true, false]}],
+          "reason": "FLAG_INVALID"
+        },
+        {
+          "id": "stacking-stated",
+          "path": "rules[].stackingStated",
+          "checks": [{"enum": [true, false]}],
+          "reason": "FLAG_INVALID"
+        },
+        {
+          "id": "stacks-with",
+          "path": "rules[].stacksWith",
+          "checks": [{"type": "array"}, {"maxItems": 20}],
+          "reason": "STACKS_WITH_INVALID"
+        },
+        {
+          "id": "stacks-with-item",
+          "path": "rules[].stacksWith[]",
+          "checks": [{"type": "string"}, {"minLength": 1}, {"maxLength": 30}, {"plainText": true}, {"noCardNumber": true}],
+          "reason": "STACKS_WITH_INVALID"
+        },
+        {
+          "id": "coupon-required",
+          "path": "rules[].couponRequired",
+          "checks": [{"enum": [true, false]}],
+          "reason": "FLAG_INVALID"
+        },
+        {
+          "id": "coupon-conditions",
+          "path": "rules[].couponConditions",
+          "checks": [{"type": "string"}, {"minLength": 1}, {"maxLength": 500}, {"plainText": true}, {"noCardNumber": true}],
+          "reason": "COUPON_INVALID"
+        },
+        {
+          "id": "valid-period",
+          "path": "rules[].validPeriod",
+          "checks": [{"type": "object"}, {"noUnknownFields": ["start", "end"]}],
+          "reason": "COUPON_INVALID"
+        },
+        {
+          "id": "valid-period-start",
+          "path": "rules[].validPeriod.start",
+          "checks": [{"type": "string"}, {"pattern": "[0-9]{4}-[0-9]{2}-[0-9]{2}"}],
+          "reason": "DATE_INVALID"
+        },
+        {
+          "id": "valid-period-end",
+          "path": "rules[].validPeriod.end",
+          "checks": [{"type": "string"}, {"pattern": "[0-9]{4}-[0-9]{2}-[0-9]{2}"}],
+          "reason": "DATE_INVALID"
+        },
+        {
+          "id": "quota",
+          "path": "rules[].quota",
+          "checks": [{"type": "integer"}, {"min": 1}, {"max": 100000000}],
+          "reason": "COUPON_INVALID"
+        },
+        {
+          "id": "cycle",
+          "path": "rules[].registrationCycle",
+          "checks": [
+            {"type": "object"},
+            {"noUnknownFields": ["kind", "weekday", "day", "monthOfQuarter", "opensOn", "closesOn"]}
+          ],
+          "reason": "CYCLE_INVALID"
+        },
+        {
+          "id": "cycle-kind",
+          "path": "rules[].registrationCycle.kind",
+          "checks": [{"enum": ["weekly", "monthly", "quarterly", "once"]}],
+          "reason": "CYCLE_INVALID"
+        },
+        {
+          "id": "cycle-weekday",
+          "path": "rules[].registrationCycle.weekday",
+          "checks": [{"type": "integer"}, {"min": 1}, {"max": 7}],
+          "reason": "CYCLE_INVALID"
+        },
+        {
+          "id": "cycle-day",
+          "path": "rules[].registrationCycle.day",
+          "checks": [{"type": "integer"}, {"min": 1}, {"max": 28}],
+          "reason": "CYCLE_INVALID"
+        },
+        {
+          "id": "cycle-month-of-quarter",
+          "path": "rules[].registrationCycle.monthOfQuarter",
+          "checks": [{"type": "integer"}, {"min": 1}, {"max": 3}],
+          "reason": "CYCLE_INVALID"
+        },
+        {
+          "id": "cycle-opens-on",
+          "path": "rules[].registrationCycle.opensOn",
+          "checks": [{"type": "string"}, {"pattern": "[0-9]{4}-[0-9]{2}-[0-9]{2}"}],
+          "reason": "CYCLE_INVALID"
+        },
+        {
+          "id": "cycle-closes-on",
+          "path": "rules[].registrationCycle.closesOn",
+          "checks": [{"type": "string"}, {"pattern": "[0-9]{4}-[0-9]{2}-[0-9]{2}"}],
+          "reason": "CYCLE_INVALID"
+        },
+        {
+          "id": "source",
+          "path": "rules[].source",
+          "checks": [{"required": true}, {"type": "string"}, {"pattern": "https://[A-Za-z0-9._~:/?#%&=+-]{1,500}"}],
+          "reason": "SOURCE_INVALID"
+        },
+        {
+          "id": "verified-at",
+          "path": "rules[].verifiedAt",
+          "checks": [{"required": true}, {"type": "string"}, {"pattern": "[0-9]{4}-[0-9]{2}-[0-9]{2}"}],
+          "reason": "DATE_INVALID"
+        }
+      ]
+    },
     "access-public": {
       "source": "specs/001-card-reward-optimizer/contracts/sdk-operations.md. Browser layer: only anonymous operations are ever allowed; nobody is authenticated or trusted as local.",
       "rules": [
@@ -521,6 +815,53 @@
           "path": "largeItemThreshold",
           "checks": [{"required": true}, {"type": "integer"}, {"min": 1}, {"max": 1000000000}],
           "reason": "THRESHOLD_INVALID"
+        }
+      ]
+    },
+    "stored-claim": {
+      "source": "specs/001-card-reward-optimizer/data-model.md (user's local coupon-claimed mark, FR-022). Allow-list; length limits are placeholders [TBD: spec defines none].",
+      "rules": [
+        {
+          "id": "known-fields",
+          "path": "",
+          "checks": [{"noUnknownFields": ["id", "issuer", "cardName", "channel", "paymentMethod", "claimedAt"]}],
+          "reason": "UNKNOWN_FIELD"
+        },
+        {
+          "id": "id",
+          "path": "id",
+          "checks": [{"required": true}, {"type": "string"}, {"pattern": "[A-Za-z0-9_-]{1,40}"}],
+          "reason": "ID_INVALID"
+        },
+        {
+          "id": "issuer",
+          "path": "issuer",
+          "checks": [{"required": true}, {"enum": ["國泰", "永豐", "富邦", "台新"]}],
+          "reason": "ISSUER_INVALID"
+        },
+        {
+          "id": "card-name",
+          "path": "cardName",
+          "checks": [{"required": true}, {"type": "string"}, {"minLength": 1}, {"maxLength": 40}],
+          "reason": "NAME_INVALID"
+        },
+        {
+          "id": "channel",
+          "path": "channel",
+          "checks": [{"required": true}, {"type": "string"}, {"minLength": 1}, {"maxLength": 30}],
+          "reason": "NAME_INVALID"
+        },
+        {
+          "id": "payment-method",
+          "path": "paymentMethod",
+          "checks": [{"required": true}, {"type": "string"}, {"minLength": 1}, {"maxLength": 30}],
+          "reason": "PAYMENT_METHOD_INVALID"
+        },
+        {
+          "id": "claimed-at",
+          "path": "claimedAt",
+          "checks": [{"required": true}, {"type": "string"}, {"pattern": "[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])"}],
+          "reason": "DATE_INVALID"
         }
       ]
     }

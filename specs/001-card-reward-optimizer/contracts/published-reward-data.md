@@ -18,13 +18,15 @@
 |---|---|---|
 | issuer、cardName | 發卡行與卡名 | |
 | channel | 通路類別 | |
-| paymentMethod | 支付方式 | 支援清單 `[TBD]` |
-| rewardRate | 回饋率 | |
-| rewardCap | 回饋金額上限 | 未知則為未知 |
-| threshold | 門檻 | |
+| paymentMethod | 支付方式 | 自由文字，不鎖定固定清單 |
+| tiers | 回饋率分段 | 清單 `{upTo, rate}`；`rate` 為萬分比整數（3.5% 存 `350`），`upTo` 為累計月消費整數新台幣，最後一段無 `upTo`（使用者 2026-11-04 確認） |
+| rewardCap | 回饋金額上限 | 整數新台幣；未知則為未知 |
+| capGroup | 跨通路共用上限（選填） | 同卡內相同值的規則共用一個上限 |
+| threshold | 單筆最低消費金額 | 整數新台幣；0 為無門檻；未知為未知。「回饋穩定」由此推出，不另設欄位 |
 | designatedMerchants | 指定商家清單 | |
 | requiresBenefitSwitch | 是否需切換權益 | |
-| stackingStated | 官方是否載明可疊加 | |
+| stackingStated | 官方是否載明可疊加 | 預設不疊加 |
+| stacksWith | 可疊加的支付方式或活動 | 文字清單；沒寫就不疊加 |
 | couponRequired | 是否需領券 | 領券狀態由使用者本機標記，不在此檔 |
 | couponConditions、validPeriod、quota | 領券條件、有效期間、名額 | |
 | registrationCycle | 登錄週期：每週／每月／每季／活動期間一次 | 結構化欄位；「下一次開放日」由程式依此與今日日期計算，不寫入檔案 |

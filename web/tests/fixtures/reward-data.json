@@ -1,0 +1,239 @@
+{
+ "schemaVersion": "1",
+ "lastVerifiedAt": "2026-11-01",
+ "rules": [
+  {
+   "issuer": "國泰",
+   "cardName": "測試卡甲",
+   "channel": "餐飲",
+   "paymentMethod": "實體卡",
+   "tiers": [
+    {
+     "rate": 200
+    }
+   ],
+   "rewardCap": 200,
+   "threshold": 0,
+   "requiresBenefitSwitch": false,
+   "couponRequired": false,
+   "source": "https://example.com/synthetic/1",
+   "verifiedAt": "2026-11-01"
+  },
+  {
+   "issuer": "國泰",
+   "cardName": "測試卡甲",
+   "channel": "餐飲",
+   "paymentMethod": "行動支付",
+   "tiers": [
+    {
+     "rate": 500
+    }
+   ],
+   "rewardCap": 300,
+   "capGroup": "mobile",
+   "threshold": 0,
+   "requiresBenefitSwitch": false,
+   "couponRequired": true,
+   "registrationCycle": {
+    "kind": "monthly",
+    "day": 1
+   },
+   "source": "https://example.com/synthetic/2",
+   "verifiedAt": "2026-11-01"
+  },
+  {
+   "issuer": "國泰",
+   "cardName": "測試卡甲",
+   "channel": "百貨",
+   "paymentMethod": "行動支付",
+   "tiers": [
+    {
+     "rate": 500
+    }
+   ],
+   "rewardCap": 300,
+   "capGroup": "mobile",
+   "threshold": 0,
+   "requiresBenefitSwitch": false,
+   "couponRequired": false,
+   "source": "https://example.com/synthetic/3",
+   "verifiedAt": "2026-11-01"
+  },
+  {
+   "issuer": "國泰",
+   "cardName": "測試卡甲",
+   "channel": "加油",
+   "paymentMethod": "實體卡",
+   "tiers": [
+    {
+     "rate": 300
+    }
+   ],
+   "rewardCap": 150,
+   "threshold": 0,
+   "requiresBenefitSwitch": false,
+   "couponRequired": false,
+   "source": "https://example.com/synthetic/4",
+   "verifiedAt": "2026-11-01"
+  },
+  {
+   "issuer": "國泰",
+   "cardName": "測試卡甲",
+   "channel": "百貨",
+   "paymentMethod": "實體卡",
+   "tiers": [
+    {
+     "rate": 100
+    }
+   ],
+   "designatedMerchants": [
+    {
+     "name": "測試百貨甲",
+     "aliases": [
+      "甲百"
+     ]
+    }
+   ],
+   "source": "https://example.com/synthetic/5",
+   "verifiedAt": "2026-11-01"
+  },
+  {
+   "issuer": "富邦",
+   "cardName": "測試卡乙",
+   "channel": "餐飲",
+   "paymentMethod": "實體卡",
+   "tiers": [
+    {
+     "rate": 300
+    }
+   ],
+   "rewardCap": 500,
+   "threshold": 0,
+   "requiresBenefitSwitch": true,
+   "couponRequired": false,
+   "source": "https://example.com/synthetic/6",
+   "verifiedAt": "2026-11-01"
+  },
+  {
+   "issuer": "富邦",
+   "cardName": "測試卡乙",
+   "channel": "餐飲",
+   "paymentMethod": "行動支付",
+   "tiers": [
+    {
+     "upTo": 3000,
+     "rate": 200
+    },
+    {
+     "rate": 600
+    }
+   ],
+   "rewardCap": 400,
+   "capGroup": "mobile",
+   "stackingStated": true,
+   "stacksWith": [
+    "實體卡"
+   ],
+   "threshold": 0,
+   "requiresBenefitSwitch": true,
+   "couponRequired": false,
+   "source": "https://example.com/synthetic/7",
+   "verifiedAt": "2026-11-01"
+  },
+  {
+   "issuer": "富邦",
+   "cardName": "測試卡乙",
+   "channel": "加油",
+   "paymentMethod": "實體卡",
+   "tiers": [
+    {
+     "rate": 300
+    }
+   ],
+   "noCap": true,
+   "threshold": 500,
+   "requiresBenefitSwitch": false,
+   "couponRequired": false,
+   "source": "https://example.com/synthetic/8",
+   "verifiedAt": "2026-11-01"
+  },
+  {
+   "issuer": "永豐",
+   "cardName": "測試卡丙",
+   "channel": "餐飲",
+   "paymentMethod": "實體卡",
+   "tiers": [
+    {
+     "rate": 300
+    }
+   ],
+   "threshold": 0,
+   "requiresBenefitSwitch": false,
+   "couponRequired": false,
+   "source": "https://example.com/synthetic/9",
+   "verifiedAt": "2026-11-01"
+  },
+  {
+   "issuer": "永豐",
+   "cardName": "測試卡丙",
+   "channel": "加油",
+   "paymentMethod": "實體卡",
+   "tiers": [
+    {
+     "rate": 400
+    }
+   ],
+   "rewardCap": 200,
+   "threshold": 0,
+   "requiresBenefitSwitch": false,
+   "couponRequired": true,
+   "registrationCycle": {
+    "kind": "weekly",
+    "weekday": 3
+   },
+   "source": "https://example.com/synthetic/10",
+   "verifiedAt": "2026-11-01"
+  },
+  {
+   "issuer": "永豐",
+   "cardName": "測試卡丙",
+   "channel": "百貨",
+   "paymentMethod": "實體卡",
+   "tiers": [
+    {
+     "rate": 150
+    }
+   ],
+   "designatedMerchants": [
+    {
+     "name": "測試百貨丙",
+     "aliases": [
+      "丙百"
+     ]
+    },
+    {
+     "name": "測試百貨甲"
+    }
+   ],
+   "source": "https://example.com/synthetic/11",
+   "verifiedAt": "2026-11-01"
+  },
+  {
+   "issuer": "台新",
+   "cardName": "測試卡丁",
+   "channel": "餐飲",
+   "paymentMethod": "實體卡",
+   "tiers": [
+    {
+     "rate": 1000
+    }
+   ],
+   "rewardCap": 100,
+   "threshold": 0,
+   "requiresBenefitSwitch": false,
+   "couponRequired": false,
+   "source": "https://example.com/synthetic/12",
+   "verifiedAt": "2026-11-01"
+  }
+ ]
+}

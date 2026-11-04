@@ -100,21 +100,21 @@ description: "Task list for 信用卡消費匯入與通路回饋最佳化"
 
 ### 決定與測試（實作前）
 
-- [ ] T034 [US2] ⚠️ DECISION 決定 RewardRule 細節：回饋金額上限的計算公式（含分段回饋率）與跨通路共用上限（R-12）、支援的支付方式清單、可疊加的資料表示、「不需切換權益」與「回饋穩定」的表示與金額門檻（R-13）、商家名稱比對方式（R-14）；寫入 `specs/001-card-reward-optimizer/data-model.md` 與 `contracts/published-reward-data.md`。**擋住 T035 至 T045**
-- [ ] T035 [P] [US2] 建立公開 JSON schema 的一致性案例：版本號、必要欄位、缺漏、無法判斷欄位為未知，於 `conformance/published-data.*`（FR-048；依 T034）
-- [ ] T036 [P] [US2] 測試推薦排序：持有卡→最高有效回饋（依所選支付方式，不疊加，除非公告載明）→月上限僅說明不參與排序→登錄／指定通路→便利性；逐項依序比較，不加權，於 `web/tests/query-ordering.test.js`（FR-051、FR-054）
-- [ ] T037 [P] [US2] 測試月上限門檻由程式計算、領券「下一次開放日」由程式依登錄週期與今日日期計算、領券狀態四種（需領券／已領／無需領券／未知），於 `web/tests/cap-coupon.test.js`（FR-053、FR-022）
-- [ ] T038 [P] [US2] 測試指定商家：條列各卡指定商家、自由輸入商家名稱的比對、輸入內容當資料不執行、未知標示未知，於 `web/tests/merchants.test.js`（FR-055、FR-018、FR-008）
+- [x] T034 [US2] ⚠️ DECISION（2026-11-04 完成；R-14 商家比對見 data-model.md）決定 RewardRule 細節：回饋金額上限的計算公式（含分段回饋率）與跨通路共用上限（R-12）、支援的支付方式清單、可疊加的資料表示、「不需切換權益」與「回饋穩定」的表示與金額門檻（R-13）、商家名稱比對方式（R-14）；寫入 `specs/001-card-reward-optimizer/data-model.md` 與 `contracts/published-reward-data.md`。**擋住 T035 至 T045**
+- [x] T035 [P] [US2] 建立公開 JSON schema 的一致性案例：版本號、必要欄位、缺漏、無法判斷欄位為未知，於 `conformance/published-data.*`（FR-048；依 T034）
+- [x] T036 [P] [US2] 測試推薦排序：持有卡→最高有效回饋（依所選支付方式，不疊加，除非公告載明）→月上限僅說明不參與排序→登錄／指定通路→便利性；逐項依序比較，不加權，於 `web/tests/query-ordering.test.js`（FR-051、FR-054）
+- [x] T037 [P] [US2] 測試月上限門檻由程式計算、領券「下一次開放日」由程式依登錄週期與今日日期計算、領券狀態四種（需領券／已領／無需領券／未知），於 `web/tests/cap-coupon.test.js`（FR-053、FR-022）
+- [x] T038 [P] [US2] 測試指定商家：條列各卡指定商家、自由輸入商家名稱的比對、輸入內容當資料不執行、未知標示未知，於 `web/tests/merchants.test.js`（FR-055、FR-018、FR-008）
 
 ### 實作
 
-- [ ] T039 [US2] 在規則檔加入公開回饋資料的 schema 規則，於 `rules/`（依 T034、T035）
-- [ ] T040 [US2] 建立固定測試資料集（合成資料，明確標示非真實回饋）與預先標註的最佳卡，於 `web/tests/fixtures/reward-data.json`（SC-003）
-- [ ] T041 [US2] 實作公開回饋資料載入與 schema 驗證，失敗或過期時回報資料狀態，於 `web/src/sdk/reward-data.js`（FR-048；依 T039）
-- [ ] T042 [US2] 實作通路查詢與推薦排序（FR-051、FR-054），於 `web/src/sdk/query.js`（依 T041、T028）
-- [ ] T043 [P] [US2] 實作月上限門檻說明（依回饋率與回饋金額上限由程式計算，不追蹤已用額度；上限未知標示未知），於 `web/src/sdk/cap.js`（FR-053；依 T034）
-- [ ] T044 [P] [US2] 實作領券狀態、下一次開放日計算、使用者本機標記「已領」；系統不代使用者領券，於 `web/src/sdk/coupon.js`（FR-022）
-- [ ] T045 [P] [US2] 實作指定商家比對，於 `web/src/sdk/merchants.js`（FR-055；依 T034）
+- [x] T039 [US2] 在規則檔加入公開回饋資料的 schema 規則，於 `rules/`（依 T034、T035）
+- [x] T040 [US2] 建立固定測試資料集（合成資料，明確標示非真實回饋）與預先標註的最佳卡，於 `web/tests/fixtures/reward-data.json`（SC-003）
+- [x] T041 [US2] 實作公開回饋資料載入與 schema 驗證，失敗或過期時回報資料狀態，於 `web/src/sdk/reward-data.js`（FR-048；依 T039）
+- [x] T042 [US2] 實作通路查詢與推薦排序（FR-051、FR-054），於 `web/src/sdk/query.js`（依 T041、T028）
+- [x] T043 [P] [US2] 實作月上限門檻說明（依回饋率與回饋金額上限由程式計算，不追蹤已用額度；上限未知標示未知），於 `web/src/sdk/cap.js`（FR-053；依 T034）
+- [x] T044 [P] [US2] 實作領券狀態、下一次開放日計算、使用者本機標記「已領」；系統不代使用者領券，於 `web/src/sdk/coupon.js`（FR-022）
+- [x] T045 [P] [US2] 實作指定商家比對，於 `web/src/sdk/merchants.js`（FR-055；依 T034）
 - [ ] T046 [P] [US2] 實作使用者本機覆寫回饋規則，標示「使用者修正」且不上傳，於 `web/src/sdk/override.js`（FR-021、FR-032）
 - [ ] T047 [US2] 建立查詢畫面，顯示來源、查證日期、免責聲明，無法判斷欄位顯示「官網沒有寫」或未知，於 `web/src/ui/query-page.js`（FR-035、FR-036、FR-026；依 T042 至 T045）
 
@@ -269,6 +269,10 @@ Task: "測試儲存隱私於 web/tests/storage-privacy.test.js"
 ### 需使用者回覆的 DECISION 任務一覽
 
 T001、T002（TLS）、T003、T004、T005、T019、T034、T048、T057、T058、T059、T079、T084、T085、T086、T087。其中開工前最少需要 **T001、T003、T004**；**T002（TLS）** 在做 US5 前決定即可。
+
+## 未來工作（已決定延後，不在目前任務範圍）
+
+- **Validator 新增「上層存在時才必填」詞彙（例如 `requiredIfParent`）**（使用者 2026-11-04 決定先接受現況、延後）：目前詞彙無法表達此條件，指定商家的 `name`、`validPeriod` 起訖日、`registrationCycle.kind` 漏填，驗證器會放行，消費端程式一律視為未知。同時可評估是否新增「陣列至少一筆」詞彙（`tiers: []` 現在也會放行）。新增詞彙須使用者確認，兩個執行器與一致性案例同步更新。建議在 US5（管理員發布流程）時重新評估。見 `contracts/validator-contract.md`。
 
 ## Notes
 

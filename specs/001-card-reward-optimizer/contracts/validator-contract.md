@@ -55,11 +55,13 @@
 
 | 規則集 | 狀態 | 用途 |
 |---|---|---|
-| `stored-card`、`stored-channel`、`stored-mapping`、`stored-habit`、`stored-snapshot`、`stored-settings` | 已實作（T017、T018） | 瀏覽器儲存的讀寫驗證。以允許清單禁止末四碼、卡號、CVV、逐筆明細；長度與數量上限為佔位值 `[TBD: spec 未定義]` |
+| `stored-card`、`stored-channel`、`stored-mapping`、`stored-habit`、`stored-snapshot`、`stored-settings`、`stored-claim`（T044，使用者本機「已領券」標記） | 已實作（T017、T018） | 瀏覽器儲存的讀寫驗證。以允許清單禁止末四碼、卡號、CVV、逐筆明細；長度與數量上限為佔位值 `[TBD: spec 未定義]` |
 | `paste-input` | 空（T024） | 貼上內容 |
-| `published-data` | 空（T039） | 公開回饋資料 |
+| `published-data` | 已實作（T039，限制見下） | 公開回饋資料；欄位缺漏代表未知；上限數值為佔位值 `[TBD: spec 未定義]` |
 | `access-public` | 已實作（T065 瀏覽器部分，提前完成） | 瀏覽器內存取檢查：只放行已宣告的匿名操作 |
 | `access-admin` | 空（T065 本機部分） | 本機服務存取檢查；在此之前一律預設拒絕 |
+
+`published-data` 的限制：現有詞彙無法表達「上層欄位出現時，下層欄位才必填」與「陣列至少一筆」，因此指定商家的 `name`、`validPeriod` 起訖日、`registrationCycle.kind` 漏填，以及 `tiers: []`，驗證器會放行，由消費端程式視為未知。是否新增詞彙 `[TBD: 待使用者決定]`。
 
 ## 一致性測試案例的最低涵蓋
 

@@ -19,6 +19,7 @@ export const COLLECTIONS = Object.freeze({
   habits: "stored-habit",
   snapshots: "stored-snapshot",
   settings: "stored-settings",
+  claims: "stored-claim",
 });
 
 export const SETTINGS_ID = "settings";
@@ -56,6 +57,11 @@ export function makeSnapshot({ id, confirmedAt, period, channelTotals, source, l
     source,
     largeItems: largeItems.map(({ category, amount }) => ({ category, amount })),
   };
+}
+
+// The user's own "coupon claimed" mark for one reward rule (card x channel x payment method). Local only (FR-022).
+export function makeClaim({ id, issuer, cardName, channel, paymentMethod, claimedAt }) {
+  return { id, issuer, cardName, channel, paymentMethod, claimedAt };
 }
 
 export function makeSettings({ largeItemThreshold = DEFAULT_LARGE_ITEM_THRESHOLD } = {}) {

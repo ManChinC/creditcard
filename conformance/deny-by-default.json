@@ -20,24 +20,6 @@
    }
   },
   {
-   "id": "published-data-has-no-rules-yet",
-   "ruleSet": "published-data",
-   "input": {
-    "a": 1
-   },
-   "settings": {},
-   "expect": {
-    "decision": "deny",
-    "failures": [
-     {
-      "rule": "",
-      "path": "",
-      "code": "NO_RULES"
-     }
-    ]
-   }
-  },
-  {
    "id": "access-admin-has-no-rules-yet",
    "ruleSet": "access-admin",
    "input": {

@@ -815,6 +815,138 @@
      }
     ]
    }
+  },
+  {
+   "id": "claim-valid",
+   "ruleSet": "stored-claim",
+   "input": {
+    "id": "claim-0a1b2c3d",
+    "issuer": "國泰",
+    "cardName": "CUBE 卡",
+    "channel": "餐飲",
+    "paymentMethod": "行動支付",
+    "claimedAt": "2026-11-04"
+   },
+   "settings": {},
+   "expect": {
+    "decision": "allow",
+    "failures": []
+   }
+  },
+  {
+   "id": "claim-last4-rejected",
+   "ruleSet": "stored-claim",
+   "input": {
+    "id": "claim-0a1b2c3d",
+    "issuer": "國泰",
+    "cardName": "CUBE 卡",
+    "channel": "餐飲",
+    "paymentMethod": "行動支付",
+    "claimedAt": "2026-11-04",
+    "last4": "1234"
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "known-fields",
+      "path": "",
+      "code": "UNKNOWN_FIELD"
+     }
+    ]
+   }
+  },
+  {
+   "id": "claim-issuer-unsupported",
+   "ruleSet": "stored-claim",
+   "input": {
+    "id": "claim-0a1b2c3d",
+    "issuer": "某銀行",
+    "cardName": "CUBE 卡",
+    "channel": "餐飲",
+    "paymentMethod": "行動支付",
+    "claimedAt": "2026-11-04"
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "issuer",
+      "path": "issuer",
+      "code": "ISSUER_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "claim-channel-missing",
+   "ruleSet": "stored-claim",
+   "input": {
+    "id": "claim-0a1b2c3d",
+    "issuer": "國泰",
+    "cardName": "CUBE 卡",
+    "paymentMethod": "行動支付",
+    "claimedAt": "2026-11-04"
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "channel",
+      "path": "channel",
+      "code": "NAME_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "claim-bad-date",
+   "ruleSet": "stored-claim",
+   "input": {
+    "id": "claim-0a1b2c3d",
+    "issuer": "國泰",
+    "cardName": "CUBE 卡",
+    "channel": "餐飲",
+    "paymentMethod": "行動支付",
+    "claimedAt": "2026/11/04"
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "claimed-at",
+      "path": "claimedAt",
+      "code": "DATE_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "claim-id-with-space",
+   "ruleSet": "stored-claim",
+   "input": {
+    "id": "claim 1",
+    "issuer": "國泰",
+    "cardName": "CUBE 卡",
+    "channel": "餐飲",
+    "paymentMethod": "行動支付",
+    "claimedAt": "2026-11-04"
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "id",
+      "path": "id",
+      "code": "ID_INVALID"
+     }
+    ]
+   }
   }
  ]
 }

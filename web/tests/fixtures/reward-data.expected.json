@@ -1,0 +1,196 @@
+{
+ "note": "Synthetic data, not real rewards. Expected best cards are annotated by hand from the rules in reward-data.json (SC-003).",
+ "scenarios": [
+  {
+   "id": "dining-physical-three-held",
+   "channel": "餐飲",
+   "paymentMethod": "實體卡",
+   "held": [
+    {
+     "issuer": "國泰",
+     "name": "測試卡甲"
+    },
+    {
+     "issuer": "富邦",
+     "name": "測試卡乙"
+    },
+    {
+     "issuer": "永豐",
+     "name": "測試卡丙"
+    }
+   ],
+   "claimed": [],
+   "expectedBest": "測試卡丙",
+   "expectedOrder": [
+    "測試卡丙",
+    "測試卡乙",
+    "測試卡甲",
+    "測試卡丁"
+   ],
+   "expectedUnknown": []
+  },
+  {
+   "id": "dining-mobile-coupon-decides-before-convenience",
+   "channel": "餐飲",
+   "paymentMethod": "行動支付",
+   "held": [
+    {
+     "issuer": "國泰",
+     "name": "測試卡甲"
+    },
+    {
+     "issuer": "富邦",
+     "name": "測試卡乙"
+    },
+    {
+     "issuer": "永豐",
+     "name": "測試卡丙"
+    }
+   ],
+   "claimed": [],
+   "expectedBest": "測試卡乙",
+   "expectedOrder": [
+    "測試卡乙",
+    "測試卡甲"
+   ],
+   "expectedUnknown": [
+    "測試卡丙"
+   ]
+  },
+  {
+   "id": "dining-mobile-claimed-coupon-then-convenience",
+   "channel": "餐飲",
+   "paymentMethod": "行動支付",
+   "held": [
+    {
+     "issuer": "國泰",
+     "name": "測試卡甲"
+    },
+    {
+     "issuer": "富邦",
+     "name": "測試卡乙"
+    },
+    {
+     "issuer": "永豐",
+     "name": "測試卡丙"
+    }
+   ],
+   "claimed": [
+    "測試卡甲"
+   ],
+   "expectedBest": "測試卡甲",
+   "expectedOrder": [
+    "測試卡甲",
+    "測試卡乙"
+   ],
+   "expectedUnknown": [
+    "測試卡丙"
+   ]
+  },
+  {
+   "id": "fuel-rate-beats-coupon",
+   "channel": "加油",
+   "paymentMethod": "實體卡",
+   "held": [
+    {
+     "issuer": "國泰",
+     "name": "測試卡甲"
+    },
+    {
+     "issuer": "富邦",
+     "name": "測試卡乙"
+    },
+    {
+     "issuer": "永豐",
+     "name": "測試卡丙"
+    }
+   ],
+   "claimed": [],
+   "expectedBest": "測試卡丙",
+   "expectedOrder": [
+    "測試卡丙",
+    "測試卡甲",
+    "測試卡乙"
+   ],
+   "expectedUnknown": []
+  },
+  {
+   "id": "dining-nothing-held",
+   "channel": "餐飲",
+   "paymentMethod": "實體卡",
+   "held": [],
+   "claimed": [],
+   "expectedBest": "測試卡丁",
+   "expectedOrder": [
+    "測試卡丁",
+    "測試卡丙",
+    "測試卡乙",
+    "測試卡甲"
+   ],
+   "expectedUnknown": []
+  },
+  {
+   "id": "dining-held-card-beats-higher-unheld",
+   "channel": "餐飲",
+   "paymentMethod": "實體卡",
+   "held": [
+    {
+     "issuer": "國泰",
+     "name": "測試卡甲"
+    }
+   ],
+   "claimed": [],
+   "expectedBest": "測試卡甲",
+   "expectedOrder": [
+    "測試卡甲",
+    "測試卡丁",
+    "測試卡丙",
+    "測試卡乙"
+   ],
+   "expectedUnknown": []
+  },
+  {
+   "id": "department-store",
+   "channel": "百貨",
+   "paymentMethod": "實體卡",
+   "held": [
+    {
+     "issuer": "國泰",
+     "name": "測試卡甲"
+    },
+    {
+     "issuer": "永豐",
+     "name": "測試卡丙"
+    }
+   ],
+   "claimed": [],
+   "expectedBest": "測試卡丙",
+   "expectedOrder": [
+    "測試卡丙",
+    "測試卡甲"
+   ],
+   "expectedUnknown": []
+  },
+  {
+   "id": "held-card-without-rule-is-unknown-others-still-ranked",
+   "channel": "加油",
+   "paymentMethod": "實體卡",
+   "held": [
+    {
+     "issuer": "台新",
+     "name": "測試卡丁"
+    }
+   ],
+   "claimed": [],
+   "expectedBest": "測試卡丙",
+   "expectedOrder": [
+    "測試卡丙",
+    "測試卡甲",
+    "測試卡乙"
+   ],
+   "expectedUnknown": [
+    "測試卡丁"
+   ]
+  }
+ ]
+}
