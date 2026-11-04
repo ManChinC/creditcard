@@ -947,6 +947,269 @@
      }
     ]
    }
+  },
+  {
+   "id": "override-valid",
+   "ruleSet": "stored-override",
+   "input": {
+    "id": "override-0a1b2c3d",
+    "overriddenAt": "2026-11-04",
+    "rule": {
+     "issuer": "國泰",
+     "cardName": "CUBE 卡",
+     "channel": "餐飲",
+     "paymentMethod": "行動支付",
+     "tiers": [
+      {
+       "rate": 350
+      }
+     ],
+     "rewardCap": 500
+    }
+   },
+   "settings": {},
+   "expect": {
+    "decision": "allow",
+    "failures": []
+   }
+  },
+  {
+   "id": "override-source-not-allowed",
+   "ruleSet": "stored-override",
+   "input": {
+    "id": "override-0a1b2c3d",
+    "overriddenAt": "2026-11-04",
+    "rule": {
+     "issuer": "國泰",
+     "cardName": "CUBE 卡",
+     "channel": "餐飲",
+     "paymentMethod": "行動支付",
+     "tiers": [
+      {
+       "rate": 350
+      }
+     ],
+     "rewardCap": 500,
+     "source": "https://example.com/x"
+    }
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "rule-item",
+      "path": "rule",
+      "code": "UNKNOWN_FIELD"
+     }
+    ]
+   }
+  },
+  {
+   "id": "override-last4-rejected",
+   "ruleSet": "stored-override",
+   "input": {
+    "id": "override-0a1b2c3d",
+    "overriddenAt": "2026-11-04",
+    "rule": {
+     "issuer": "國泰",
+     "cardName": "CUBE 卡",
+     "channel": "餐飲",
+     "paymentMethod": "行動支付",
+     "tiers": [
+      {
+       "rate": 350
+      }
+     ],
+     "rewardCap": 500,
+     "last4": "1234"
+    }
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "rule-item",
+      "path": "rule",
+      "code": "UNKNOWN_FIELD"
+     }
+    ]
+   }
+  },
+  {
+   "id": "override-rate-fractional",
+   "ruleSet": "stored-override",
+   "input": {
+    "id": "override-0a1b2c3d",
+    "overriddenAt": "2026-11-04",
+    "rule": {
+     "issuer": "國泰",
+     "cardName": "CUBE 卡",
+     "channel": "餐飲",
+     "paymentMethod": "行動支付",
+     "tiers": [
+      {
+       "rate": 3.5
+      }
+     ],
+     "rewardCap": 500
+    }
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "tier-rate",
+      "path": "rule.tiers[0].rate",
+      "code": "RATE_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "override-markup-in-card-name",
+   "ruleSet": "stored-override",
+   "input": {
+    "id": "override-0a1b2c3d",
+    "overriddenAt": "2026-11-04",
+    "rule": {
+     "issuer": "國泰",
+     "cardName": "<b>卡</b>",
+     "channel": "餐飲",
+     "paymentMethod": "行動支付",
+     "tiers": [
+      {
+       "rate": 350
+      }
+     ],
+     "rewardCap": 500
+    }
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "rule-card-name",
+      "path": "rule.cardName",
+      "code": "NAME_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "override-flag-as-string",
+   "ruleSet": "stored-override",
+   "input": {
+    "id": "override-0a1b2c3d",
+    "overriddenAt": "2026-11-04",
+    "rule": {
+     "issuer": "國泰",
+     "cardName": "CUBE 卡",
+     "channel": "餐飲",
+     "paymentMethod": "行動支付",
+     "tiers": [
+      {
+       "rate": 350
+      }
+     ],
+     "rewardCap": 500,
+     "requiresBenefitSwitch": "false"
+    }
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "benefit-switch",
+      "path": "rule.requiresBenefitSwitch",
+      "code": "FLAG_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "override-rule-missing",
+   "ruleSet": "stored-override",
+   "input": {
+    "id": "override-0a1b2c3d",
+    "overriddenAt": "2026-11-04"
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "rule",
+      "path": "rule",
+      "code": "RULE_INVALID"
+     },
+     {
+      "rule": "rule-issuer",
+      "path": "rule.issuer",
+      "code": "ISSUER_INVALID"
+     },
+     {
+      "rule": "rule-card-name",
+      "path": "rule.cardName",
+      "code": "NAME_INVALID"
+     },
+     {
+      "rule": "rule-channel",
+      "path": "rule.channel",
+      "code": "NAME_INVALID"
+     },
+     {
+      "rule": "rule-payment-method",
+      "path": "rule.paymentMethod",
+      "code": "PAYMENT_METHOD_INVALID"
+     },
+     {
+      "rule": "rule-tiers",
+      "path": "rule.tiers",
+      "code": "TIERS_INVALID"
+     },
+     {
+      "rule": "tier-rate",
+      "path": "rule.tiers.rate",
+      "code": "RATE_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "override-date-bad",
+   "ruleSet": "stored-override",
+   "input": {
+    "id": "override-0a1b2c3d",
+    "overriddenAt": "2026/11/04",
+    "rule": {
+     "issuer": "國泰",
+     "cardName": "CUBE 卡",
+     "channel": "餐飲",
+     "paymentMethod": "行動支付",
+     "tiers": [
+      {
+       "rate": 350
+      }
+     ],
+     "rewardCap": 500
+    }
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "overridden-at",
+      "path": "overriddenAt",
+      "code": "DATE_INVALID"
+     }
+    ]
+   }
   }
  ]
 }

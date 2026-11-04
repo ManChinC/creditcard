@@ -24,7 +24,7 @@ test("no web source uses an API that turns text into markup or code", () => {
   }
 });
 
-test("the page makes no network request except loading its own rules file", () => {
+test("the page makes no network request except loading its own rules file and the published reward data", () => {
   for (const file of sourceFiles()) {
     const text = readFileSync(file, "utf8");
     const rel = path.relative(ROOT, file);
@@ -32,8 +32,11 @@ test("the page makes no network request except loading its own rules file", () =
       assert.equal(text.includes(api), false, `${rel} uses ${api}`);
     }
     const fetches = text.match(/fetch\(/g) ?? [];
-    if (rel.endsWith("main.js")) assert.equal(fetches.length, 1);
-    else assert.equal(fetches.length, 0, `${rel} must not call fetch`);
+    if (rel.endsWith("main.js")) {
+      assert.equal(fetches.length, 2);
+      const targets = [...text.matchAll(/fetch\("([^"]*)"\)/g)].map((m) => m[1]).sort();
+      assert.deepEqual(targets, ["./reward-data.json", "./validator-rules.json"]);
+    } else assert.equal(fetches.length, 0, `${rel} must not call fetch`);
     assert.equal(/https?:\/\//.test(text.replace(/<!doctype[^>]*>/i, "")), false, `${rel} contains an external URL`);
   }
 });

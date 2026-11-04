@@ -5,7 +5,7 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { createStore, browserBackend } from "../src/storage/store.js";
-import { makeCard, makeChannel, makeMapping, makeHabit, makeSnapshot, makeSettings, makeClaim, COLLECTIONS } from "../src/sdk/models.js";
+import { makeCard, makeChannel, makeMapping, makeHabit, makeSnapshot, makeSettings, makeClaim, makeOverride, COLLECTIONS } from "../src/sdk/models.js";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const rules = JSON.parse(readFileSync(path.join(ROOT, "rules", "validator-rules.json"), "utf8"));
@@ -73,6 +73,7 @@ test("every record kind built by the model factories passes its rule set", () =>
     }),
     settings: makeSettings(),
     claims: makeClaim({ id: "claim-0a1b2c3d", issuer: "國泰", cardName: "CUBE 卡", channel: "餐飲", paymentMethod: "行動支付", claimedAt: "2026-11-04" }),
+    overrides: makeOverride({ id: "override-0a1b2c3d", overriddenAt: "2026-11-04", rule: { issuer: "國泰", cardName: "CUBE 卡", channel: "餐飲", paymentMethod: "行動支付", tiers: [{ rate: 350 }] } }),
   };
   assert.deepEqual(Object.keys(records).sort(), Object.keys(COLLECTIONS).sort());
   for (const [collection, record] of Object.entries(records)) {

@@ -1,8 +1,12 @@
-// Entry point for the public page. The rules file is fetched from the same place as the page; the build/deploy
-// step must publish rules/validator-rules.json next to index.html (see tasks.md T085).
+// Entry point for the public page. The page makes exactly two requests, both for its own static files next to
+// index.html: validator-rules.json and reward-data.json. The deploy step must publish rules/validator-rules.json
+// and the published reward data there (see tasks.md T085).
 
 import { createStore, browserBackend } from "./storage/store.js";
 import { mountImportPage } from "./ui/import-page.js";
+import { mountQueryPage } from "./ui/query-page.js";
+import { loadRewardData } from "./sdk/reward-data.js";
+import { todayDate } from "./sdk/snapshot.js";
 import { mountRiskNotice } from "./ui/risk-notice.js";
 import { el } from "./ui/render.js";
 
@@ -20,7 +24,16 @@ async function start() {
   }
   const rules = await response.json();
   const store = createStore({ backend, rules });
+  let rewardText = null;
+  try {
+    const rewardResponse = await fetch("./reward-data.json");
+    if (rewardResponse.ok) rewardText = await rewardResponse.text();
+  } catch {
+    rewardText = null;
+  }
+  const rewardState = loadRewardData({ text: rewardText, rules, today: todayDate() });
   mountRiskNotice(root, { store, onCleared: () => location.reload() });
+  mountQueryPage(root, { store, rules, rewardState });
   mountImportPage(root, { store, rules });
 }
 

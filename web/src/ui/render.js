@@ -31,3 +31,11 @@ export function table(headers, rows) {
 export function formatMoney(n) {
   return n === null || n === undefined ? "未知" : `NT$ ${Number(n).toLocaleString("zh-TW")}`;
 }
+
+// Basis points -> percent text with at most two decimals: 350 -> "3.5%", 300 -> "3%", 333 -> "3.33%".
+export function formatRate(bp) {
+  if (!Number.isSafeInteger(bp) || bp < 0) return "未知";
+  const whole = Math.trunc(bp / 100);
+  const fraction = String(bp % 100).padStart(2, "0").replace(/0+$/, "");
+  return `${whole}${fraction === "" ? "" : `.${fraction}`}%`;
+}

@@ -16,6 +16,7 @@
 //     spend is unknown is not treated as convenient in step 5.
 
 import { couponState } from "./coupon.js";
+import { matchChannel, normalizeName } from "./channels.js";
 
 const sameCard = (a, b) => a.issuer === b.issuer && a.cardName === b.cardName;
 
@@ -72,4 +73,21 @@ export function rankCards({ rules, heldCards = [], channel, paymentMethod, isCla
     .filter((h) => !seen.has(`${h.issuer}\u0000${h.name}`))
     .map((h) => ({ issuer: h.issuer, cardName: h.name }));
   return { ranked, unknown };
+}
+
+// Which channel string of the published data the user means. The text is compared with the data's own channel names;
+// failing that, it is matched against the user's channel list (names and aliases, FR-004/FR-031) and the matched
+// channel's names are compared with the data's. Returns null when the data has nothing for it (no guessing).
+export function resolveChannel(input, dataChannels, userChannels = []) {
+  const wanted = normalizeName(typeof input === "string" ? input : "");
+  if (wanted === "") return null;
+  const byName = new Map(dataChannels.map((c) => [normalizeName(c), c]));
+  if (byName.has(wanted)) return byName.get(wanted);
+  const hit = matchChannel(input, userChannels);
+  if (!hit.matched) return null;
+  const channel = userChannels.find((c) => c.id === hit.id);
+  for (const name of [channel.name, ...channel.aliases]) {
+    if (byName.has(normalizeName(name))) return byName.get(normalizeName(name));
+  }
+  return null;
 }

@@ -20,6 +20,7 @@ export const COLLECTIONS = Object.freeze({
   snapshots: "stored-snapshot",
   settings: "stored-settings",
   claims: "stored-claim",
+  overrides: "stored-override",
 });
 
 export const SETTINGS_ID = "settings";
@@ -62,6 +63,11 @@ export function makeSnapshot({ id, confirmedAt, period, channelTotals, source, l
 // The user's own "coupon claimed" mark for one reward rule (card x channel x payment method). Local only (FR-022).
 export function makeClaim({ id, issuer, cardName, channel, paymentMethod, claimedAt }) {
   return { id, issuer, cardName, channel, paymentMethod, claimedAt };
+}
+
+// The user's own correction of one reward rule, kept in this browser only (FR-021, FR-032).
+export function makeOverride({ id, overriddenAt, rule }) {
+  return { id, overriddenAt, rule };
 }
 
 export function makeSettings({ largeItemThreshold = DEFAULT_LARGE_ITEM_THRESHOLD } = {}) {

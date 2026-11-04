@@ -115,8 +115,8 @@ description: "Task list for 信用卡消費匯入與通路回饋最佳化"
 - [x] T043 [P] [US2] 實作月上限門檻說明（依回饋率與回饋金額上限由程式計算，不追蹤已用額度；上限未知標示未知），於 `web/src/sdk/cap.js`（FR-053；依 T034）
 - [x] T044 [P] [US2] 實作領券狀態、下一次開放日計算、使用者本機標記「已領」；系統不代使用者領券，於 `web/src/sdk/coupon.js`（FR-022）
 - [x] T045 [P] [US2] 實作指定商家比對，於 `web/src/sdk/merchants.js`（FR-055；依 T034）
-- [ ] T046 [P] [US2] 實作使用者本機覆寫回饋規則，標示「使用者修正」且不上傳，於 `web/src/sdk/override.js`（FR-021、FR-032）
-- [ ] T047 [US2] 建立查詢畫面，顯示來源、查證日期、免責聲明，無法判斷欄位顯示「官網沒有寫」或未知，於 `web/src/ui/query-page.js`（FR-035、FR-036、FR-026；依 T042 至 T045）
+- [x] T046 [P] [US2] 實作使用者本機覆寫回饋規則，標示「使用者修正」且不上傳，於 `web/src/sdk/override.js`（FR-021、FR-032）
+- [x] T047 [US2] 建立查詢畫面，顯示來源、查證日期、免責聲明，無法判斷欄位顯示「官網沒有寫」或未知，於 `web/src/ui/query-page.js`（FR-035、FR-036、FR-026；依 T042 至 T045）
 
 **Checkpoint**: User Stories 1 與 2 皆可獨立運作
 

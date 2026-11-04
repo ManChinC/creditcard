@@ -222,3 +222,40 @@ test("rule text is returned as data and never interpreted", () => {
   const result = rankCards({ ...base, rules, heldCards: [{ issuer: "國泰", name: "<img src=x onerror=alert(1)>" }] });
   assert.equal(result.ranked[0].cardName, "<img src=x onerror=alert(1)>");
 });
+
+// ---- resolveChannel and formatRate (T047) ----
+import { resolveChannel } from "../src/sdk/query.js";
+import { formatRate } from "../src/ui/render.js";
+import { DEFAULT_CHANNELS } from "../src/sdk/default-channels.js";
+
+const userChannels = DEFAULT_CHANNELS.map((c) => ({ ...c, aliases: [...(c.aliases ?? [])] }));
+
+test("a channel typed as the data's own name is used as is, ignoring case, spacing and full-width forms", () => {
+  assert.equal(resolveChannel("餐飲", ["餐飲", "加油"], userChannels), "餐飲");
+  assert.equal(resolveChannel("  ＡＢ ", ["ab"], userChannels), "ab");
+});
+
+test("a channel typed as one of the user's own channel names or aliases maps to the data's name for it", () => {
+  const fuel = userChannels.find((c) => c.id === "fuel");
+  assert.equal(resolveChannel(fuel.name, [fuel.name], userChannels), fuel.name);
+  const custom = [{ id: "custom-1", name: "我的加油站", aliases: ["加油"], origin: "custom" }];
+  assert.equal(resolveChannel("我的加油站", ["加油"], custom), "加油");
+});
+
+test("a channel the data does not have is not guessed", () => {
+  assert.equal(resolveChannel("不存在的通路", ["餐飲"], userChannels), null);
+  assert.equal(resolveChannel("", ["餐飲"], userChannels), null);
+  assert.equal(resolveChannel(undefined, ["餐飲"], userChannels), null);
+});
+
+test("rates are shown as percentages from basis points", () => {
+  assert.equal(formatRate(350), "3.5%");
+  assert.equal(formatRate(300), "3%");
+  assert.equal(formatRate(333), "3.33%");
+  assert.equal(formatRate(5), "0.05%");
+  assert.equal(formatRate(0), "0%");
+  assert.equal(formatRate(10000), "100%");
+  assert.equal(formatRate(undefined), "未知");
+  assert.equal(formatRate(-1), "未知");
+  assert.equal(formatRate(3.5), "未知");
+});
