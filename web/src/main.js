@@ -31,7 +31,7 @@ async function start() {
   } catch {
     rewardText = null;
   }
-  const rewardState = loadRewardData({ text: rewardText, rules, today: todayDate() });
+  const rewardState = loadRewardData({ text: rewardText, rules });
   mountRiskNotice(root, { store, onCleared: () => location.reload() });
   mountQueryPage(root, { store, rules, rewardState });
   mountImportPage(root, { store, rules });

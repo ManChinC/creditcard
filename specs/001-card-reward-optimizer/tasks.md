@@ -110,7 +110,7 @@ description: "Task list for 信用卡消費匯入與通路回饋最佳化"
 
 - [x] T039 [US2] 在規則檔加入公開回饋資料的 schema 規則，於 `rules/`（依 T034、T035）
 - [x] T040 [US2] 建立固定測試資料集（合成資料，明確標示非真實回饋）與預先標註的最佳卡，於 `web/tests/fixtures/reward-data.json`（SC-003）
-- [x] T041 [US2] 實作公開回饋資料載入與 schema 驗證，失敗或過期時回報資料狀態，於 `web/src/sdk/reward-data.js`（FR-048；依 T039）
+- [x] T041 [US2] 實作公開回饋資料載入與 schema 驗證，失敗時回報資料狀態（不判斷過期），於 `web/src/sdk/reward-data.js`（FR-048；依 T039）
 - [x] T042 [US2] 實作通路查詢與推薦排序（FR-051、FR-054），於 `web/src/sdk/query.js`（依 T041、T028）
 - [x] T043 [P] [US2] 實作月上限門檻說明（依回饋率與回饋金額上限由程式計算，不追蹤已用額度；上限未知標示未知），於 `web/src/sdk/cap.js`（FR-053；依 T034）
 - [x] T044 [P] [US2] 實作領券狀態、下一次開放日計算、使用者本機標記「已領」；系統不代使用者領券，於 `web/src/sdk/coupon.js`（FR-022）
@@ -128,9 +128,9 @@ description: "Task list for 信用卡消費匯入與通路回饋最佳化"
 
 **Independent Test**: 固定市場資料與使用者消費結構，回饋差額與人工試算一致；金額與程式獨立重算 100% 一致（SC-004）
 
-- [ ] T048 [US3] ⚠️ DECISION 決定已發布資料「過期」的時間長度與提示方式（Edge Cases `[TBD]`），寫回 spec.md。**擋住 T050 的過期判斷**
-- [ ] T049 [P] [US3] 測試健檢：逐通路比較與回饋差額、現有卡皆最佳時回報無需更換、資料失敗或過期時不給確定性結論，於 `web/tests/health-check.test.js`（FR-009、SC-004）
-- [ ] T050 [US3] 實作健檢，標示資料來源與取得時間，金額一律由程式計算，於 `web/src/sdk/health-check.js`（FR-009、FR-010、FR-013；依 T042、T048）
+- [x] T048 [US3] ⚠️ DECISION（2026-11-04 完成）已發布資料「過期」：公開頁面只顯示最後查證日期，不判斷過期也不提示；管理員模式另行提醒，天數隨 T059 決定。已寫回 spec.md Edge Cases 與 US3 情境 3
+- [ ] T049 [P] [US3] 測試健檢：逐通路比較與回饋差額、現有卡皆最佳時回報無需更換、資料讀不到或驗證失敗時不給確定性結論（不判斷過期），於 `web/tests/health-check.test.js`（FR-009、SC-004）
+- [ ] T050 [US3] 實作健檢，標示資料來源與取得時間，金額一律由程式計算，於 `web/src/sdk/health-check.js`（FR-009、FR-010、FR-013；依 T042）
 - [ ] T051 [US3] 建立健檢畫面，於 `web/src/ui/health-page.js`（依 T050）
 
 **Checkpoint**: User Stories 1 至 3 可獨立運作
@@ -161,7 +161,7 @@ description: "Task list for 信用卡消費匯入與通路回饋最佳化"
 - [ ] T056 [US5] 在 `specs/001-card-reward-optimizer/plan.md` 的專案結構補上 `admin/src/ui/`（管理員畫面），並標示為 `[INFERRED]` 待確認
 - [ ] T057 [US5] ⚠️ DECISION 忘記密碼時如何確認操作者為管理員本人（R-03）、憑證閒置清除時機（R-09）；寫入 spec.md FR-033、FR-034。**擋住 T069、T071**
 - [ ] T058 [US5] ⚠️ DECISION 「內容相同」的判定方式與已確認狀態的有效範圍（R-07）、大額驗證不通過時拒絕整份或僅標示該項（R-08）；寫入 spec.md FR-028、FR-040。**擋住 T073**
-- [ ] T059 [US5] ⚠️ DECISION 回饋資料蒐集的具體作業流程與各銀行更新週期（R-11）；寫入 spec.md FR-021。**擋住 T075**
+- [ ] T059 [US5] ⚠️ DECISION 回饋資料蒐集的具體作業流程與各銀行更新週期（R-11），並決定管理員模式「資料多久未查證就提醒」的天數（T048 延後至此）；寫入 spec.md FR-021。**擋住 T075**
 - [ ] T060 [P] [US5] 建立存取控制一致性案例：無 token、過期 token、竄改 protectionLevel、非近端呼叫、匿名呼叫受保護操作，於 `conformance/access-control.*`（FR-044 至 FR-046、SC-012；依 T004）
 - [ ] T061 [P] [US5] 測試連線限制：僅本機連線、請求來源檢查、每次登入一次性令牌、其他網頁呼叫被拒，於 `admin/tests/test_server_limits.py`（FR-041）
 - [ ] T062 [P] [US5] 測試憑證：憑證檔加密、登入時解密、只讀取管理員指定的單一檔案、不出現在日誌與畫面、閒置清除、重設密碼後舊憑證檔無法解密，於 `admin/tests/test_credentials.py`（FR-034、FR-033）

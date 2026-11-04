@@ -84,41 +84,36 @@ test("designated merchants are listed per card and a typed name is matched again
 
 const TODAY = "2026-11-04";
 
-test("the loader accepts the fixed data set and reports its age", () => {
-  const result = loadRewardData({ text, rules, today: TODAY });
+test("the loader accepts the fixed data set and reports its verification date, with no stale judgement", () => {
+  const result = loadRewardData({ text, rules });
   assert.equal(result.status, "ok");
   assert.equal(result.lastVerifiedAt, "2026-11-01");
-  assert.equal(result.ageDays, 3);
-  assert.equal(result.stale, null); // how old is too old is not defined by the spec
+  assert.equal("stale" in result, false); // user decision 2026-11-04: the public page only shows the date
+  assert.equal("ageDays" in result, false);
   assert.equal(result.data.rules.length, data.rules.length);
 });
 
-test("staleness is judged only when the caller says how old is too old", () => {
-  assert.equal(loadRewardData({ text, rules, today: TODAY, staleAfterDays: 2 }).stale, true);
-  assert.equal(loadRewardData({ text, rules, today: TODAY, staleAfterDays: 3 }).stale, false);
-});
-
 test("a file that could not be read is unavailable", () => {
-  assert.deepEqual(loadRewardData({ text: null, rules, today: TODAY }), { status: "unavailable" });
-  assert.deepEqual(loadRewardData({ text: undefined, rules, today: TODAY }), { status: "unavailable" });
+  assert.deepEqual(loadRewardData({ text: null, rules }), { status: "unavailable" });
+  assert.deepEqual(loadRewardData({ text: undefined, rules }), { status: "unavailable" });
 });
 
 test("text that is not JSON is invalid and no data is returned", () => {
-  const result = loadRewardData({ text: "<html>not json</html>", rules, today: TODAY });
+  const result = loadRewardData({ text: "<html>not json</html>", rules });
   assert.equal(result.status, "invalid");
   assert.equal(result.failures[0].code, "NOT_JSON");
   assert.equal("data" in result, false);
 });
 
 test("data that fails the rules is invalid, with the Validator's reasons and no data (FR-048, US3 scenario 3)", () => {
-  const result = loadRewardData({ text: JSON.stringify({ ...data, schemaVersion: "2" }), rules, today: TODAY });
+  const result = loadRewardData({ text: JSON.stringify({ ...data, schemaVersion: "2" }), rules });
   assert.equal(result.status, "invalid");
   assert.deepEqual(result.failures, [{ rule: "schema-version", path: "schemaVersion", code: "SCHEMA_VERSION_UNSUPPORTED" }]);
   assert.equal("data" in result, false);
 });
 
 test("a missing rule set makes the loader refuse everything", () => {
-  assert.equal(loadRewardData({ text, rules: { ruleSets: {} }, today: TODAY }).status, "invalid");
+  assert.equal(loadRewardData({ text, rules: { ruleSets: {} } }).status, "invalid");
 });
 
 // ---- the user's local "claimed" marks ----

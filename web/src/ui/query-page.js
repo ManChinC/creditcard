@@ -72,10 +72,9 @@ export function mountQueryPage(root, { store, rules, rewardState, today = todayD
   const paymentMethods = [...new Set(published.map((r) => r.paymentMethod))];
 
   section.append(
-    el("p", { text: `回饋資料最後查證日期：${rewardState.lastVerifiedAt}（距今 ${rewardState.ageDays} 天）` }),
+    el("p", { text: `回饋資料最後查證日期：${rewardState.lastVerifiedAt}` }),
     el("p", { text: DISCLAIMER }),
   );
-  if (rewardState.stale === true) section.append(el("p", { text: "這份資料可能已過期，請以官網為準。" }));
 
   const channelInput = el("input", { type: "text", placeholder: "通路名稱", list: "query-channels" });
   const datalist = el("datalist", { id: "query-channels" }, dataChannels.map((c) => el("option", { value: c })));
