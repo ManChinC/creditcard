@@ -29,8 +29,12 @@ export function makeCard({ id, issuer, name }) {
   return { id, issuer, name };
 }
 
-export function makeChannel({ id, name, aliases = [], origin = "custom" }) {
-  return { id, name, aliases: [...aliases], origin };
+// canonicalId (optional): the channel name in the published reward data that the user confirmed this channel to be.
+// The published data has no channel ids, so the value is that data's own channel name.
+export function makeChannel({ id, name, aliases = [], origin = "custom", canonicalId }) {
+  const channel = { id, name, aliases: [...aliases], origin };
+  if (canonicalId !== undefined) channel.canonicalId = canonicalId;
+  return channel;
 }
 
 // One mapping per channel (id = channelId). cardId is omitted when the user does not know the card.

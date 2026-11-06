@@ -129,9 +129,9 @@ description: "Task list for 信用卡消費匯入與通路回饋最佳化"
 **Independent Test**: 固定市場資料與使用者消費結構，回饋差額與人工試算一致；金額與程式獨立重算 100% 一致（SC-004）
 
 - [x] T048 [US3] ⚠️ DECISION（2026-11-04 完成）已發布資料「過期」：公開頁面只顯示最後查證日期，不判斷過期也不提示；管理員模式另行提醒，天數隨 T059 決定。已寫回 spec.md Edge Cases 與 US3 情境 3
-- [ ] T049 [P] [US3] 測試健檢：逐通路比較與回饋差額、現有卡皆最佳時回報無需更換、資料讀不到或驗證失敗時不給確定性結論（不判斷過期），於 `web/tests/health-check.test.js`（FR-009、SC-004）
-- [ ] T050 [US3] 實作健檢，標示資料來源與取得時間，金額一律由程式計算，於 `web/src/sdk/health-check.js`（FR-009、FR-010、FR-013；依 T042）
-- [ ] T051 [US3] 建立健檢畫面，於 `web/src/ui/health-page.js`（依 T050）
+- [x] T049 [P] [US3] 測試健檢：逐通路比較與回饋差額、現有卡皆最佳時回報無需更換、資料讀不到或驗證失敗時不給確定性結論（不判斷過期），於 `web/tests/health-check.test.js`（FR-009、SC-004）
+- [x] T050 [US3] 實作健檢，標示資料來源與取得時間，金額一律由程式計算，於 `web/src/sdk/health-check.js`（FR-009、FR-010、FR-013；依 T042）
+- [x] T051 [US3] 建立健檢畫面，於 `web/src/ui/health-page.js`（依 T050）
 
 **Checkpoint**: User Stories 1 至 3 可獨立運作
 
@@ -202,6 +202,9 @@ description: "Task list for 信用卡消費匯入與通路回饋最佳化"
 - [ ] T087 ⚠️ DECISION 決定 Constitution 的 `[TBD]`：程式碼審查流程與核准者、修訂核准者、效能目標與 SLA、其他合規要求
 - [ ] T088 安全強化審查：公開 JSON 完整性（是否簽章，research.md 風險 3）、兩個執行器行為差異、貼上內容注入
 - [ ] T089 依 `quickstart.md` 執行全部 10 個驗證情境
+- [x] T091 ⚠️ DECISION（2026-11-06 完成）通路與公開資料通路名稱的對應：以公開資料名稱為準、`canonicalId`、候選由使用者確認、使用者自行加別名、自動去除括號與「含…」。已實作 `web/src/sdk/channels.js`（`extractCore`、`channelCandidates`、`setCanonical`）、`resolveChannel`、`stored-channel` 規則與一致性案例、通路畫面 `web/src/ui/channels-page.js`，並已寫回 spec.md、data-model.md、published-reward-data.md
+- [ ] T092 ⚠️ DECISION 比對失敗的輸入回傳給管理者：與 FR-032、SC-010 衝突 `[CONFLICT]`；須決定是否修訂這兩條、回傳內容、使用者同意方式與傳送管道（公開頁面無後端）。決定前不實作
+- [ ] T093 ⚠️ DECISION 提供「去除領域後綴」清單（例如「加油站」），寫入 spec.md 與 `extractCore`；目前只去除括號與「含…」
 - [ ] T090 重新驗證 `specs/001-card-reward-optimizer/checklists/requirements.md`
 
 ---
@@ -268,7 +271,7 @@ Task: "測試儲存隱私於 web/tests/storage-privacy.test.js"
 
 ### 需使用者回覆的 DECISION 任務一覽
 
-T001、T002（TLS）、T003、T004、T005、T019、T034、T048、T057、T058、T059、T079、T084、T085、T086、T087。其中開工前最少需要 **T001、T003、T004**；**T002（TLS）** 在做 US5 前決定即可。
+T001、T002（TLS）、T003、T004、T005、T019、T034、T048、T057、T058、T059、T079、T084、T085、T086、T087、T092、T093。其中開工前最少需要 **T001、T003、T004**；**T002（TLS）** 在做 US5 前決定即可。
 
 ## 未來工作（已決定延後，不在目前任務範圍）
 

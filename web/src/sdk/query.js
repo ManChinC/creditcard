@@ -16,7 +16,7 @@
 //     spend is unknown is not treated as convenient in step 5.
 
 import { couponState } from "./coupon.js";
-import { matchChannel, normalizeName } from "./channels.js";
+import { extractCore, matchChannel, normalizeName } from "./channels.js";
 
 const sameCard = (a, b) => a.issuer === b.issuer && a.cardName === b.cardName;
 
@@ -79,15 +79,28 @@ export function rankCards({ rules, heldCards = [], channel, paymentMethod, isCla
 // failing that, it is matched against the user's channel list (names and aliases, FR-004/FR-031) and the matched
 // channel's names are compared with the data's. Returns null when the data has nothing for it (no guessing).
 export function resolveChannel(input, dataChannels, userChannels = []) {
-  const wanted = normalizeName(typeof input === "string" ? input : "");
-  if (wanted === "") return null;
+  const text = typeof input === "string" ? input : "";
+  if (normalizeName(text) === "") return null;
   const byName = new Map(dataChannels.map((c) => [normalizeName(c), c]));
-  if (byName.has(wanted)) return byName.get(wanted);
+  const byCore = new Map();
+  for (const c of dataChannels) {
+    const core = extractCore(c);
+    if (core !== "") byCore.set(core, byCore.has(core) ? null : c); // null: two published names share the core
+  }
+  const same = (name) => {
+    if (byName.has(normalizeName(name))) return byName.get(normalizeName(name));
+    const core = extractCore(name);
+    return core !== "" && byCore.get(core) ? byCore.get(core) : null;
+  };
+  const direct = same(text);
+  if (direct !== null) return direct;
   const hit = matchChannel(input, userChannels);
   if (!hit.matched) return null;
   const channel = userChannels.find((c) => c.id === hit.id);
+  if (channel.canonicalId !== undefined && byName.has(normalizeName(channel.canonicalId))) return byName.get(normalizeName(channel.canonicalId));
   for (const name of [channel.name, ...channel.aliases]) {
-    if (byName.has(normalizeName(name))) return byName.get(normalizeName(name));
+    const found = same(name);
+    if (found !== null) return found;
   }
   return null;
 }

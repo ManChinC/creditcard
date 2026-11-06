@@ -1210,6 +1210,88 @@
      }
     ]
    }
+  },
+  {
+   "id": "channel-canonical-valid",
+   "ruleSet": "stored-channel",
+   "input": {
+    "id": "fuel",
+    "name": "加油",
+    "aliases": [],
+    "origin": "default",
+    "canonicalId": "餐飲"
+   },
+   "settings": {},
+   "expect": {
+    "decision": "allow",
+    "failures": []
+   }
+  },
+  {
+   "id": "channel-canonical-empty",
+   "ruleSet": "stored-channel",
+   "input": {
+    "id": "fuel",
+    "name": "加油",
+    "aliases": [],
+    "origin": "default",
+    "canonicalId": ""
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "canonical-id",
+      "path": "canonicalId",
+      "code": "NAME_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "channel-canonical-not-string",
+   "ruleSet": "stored-channel",
+   "input": {
+    "id": "fuel",
+    "name": "加油",
+    "aliases": [],
+    "origin": "default",
+    "canonicalId": 5
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "canonical-id",
+      "path": "canonicalId",
+      "code": "NAME_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "channel-canonical-markup",
+   "ruleSet": "stored-channel",
+   "input": {
+    "id": "fuel",
+    "name": "加油",
+    "aliases": [],
+    "origin": "default",
+    "canonicalId": "<b>x</b>"
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "canonical-id",
+      "path": "canonicalId",
+      "code": "NAME_INVALID"
+     }
+    ]
+   }
   }
  ]
 }

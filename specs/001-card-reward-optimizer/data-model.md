@@ -26,7 +26,8 @@
 | 欄位 | 說明 | 規則 |
 |---|---|---|
 | name | 名稱 | 預設 11 項，可自訂新增、修改、刪除（FR-031） |
-| aliases | 別名 | 自訂通路可設定；預設通路別名規則 `[TBD]` |
+| aliases | 別名 | 預設與自訂通路皆可由使用者新增、移除（使用者 2026-11-06 決定）；比對規則見 spec.md Edge Cases |
+| canonicalId | 對應的公開資料通路名稱 | 可省略。使用者在候選中確認後記錄；公開資料沒有通路代號，故值為該資料的通路名稱，資料裡已不存在此名稱時忽略。須通過 Validator `stored-channel`（`canonical-id`） |
 | monthlyAverage | 月均估算（新台幣） | 來源標記見 HabitEntry／SummarySnapshot |
 
 ### ChannelCardMapping（通路 × 卡對照）

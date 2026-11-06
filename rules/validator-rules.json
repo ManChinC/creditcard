@@ -601,7 +601,7 @@
         {
           "id": "known-fields",
           "path": "",
-          "checks": [{"noUnknownFields": ["id", "name", "aliases", "origin"]}],
+          "checks": [{"noUnknownFields": ["id", "name", "aliases", "origin", "canonicalId"]}],
           "reason": "UNKNOWN_FIELD"
         },
         {
@@ -633,6 +633,12 @@
           "path": "origin",
           "checks": [{"required": true}, {"enum": ["default", "custom"]}],
           "reason": "ORIGIN_INVALID"
+        },
+        {
+          "id": "canonical-id",
+          "path": "canonicalId",
+          "checks": [{"type": "string"}, {"minLength": 1}, {"maxLength": 30}, {"plainText": true}, {"noCardNumber": true}],
+          "reason": "NAME_INVALID"
         }
       ]
     },

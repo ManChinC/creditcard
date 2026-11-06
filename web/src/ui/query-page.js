@@ -8,13 +8,13 @@ import { capExplanation } from "../sdk/cap.js";
 import { nextOpenDate, isClaimed, markClaimed, unmarkClaimed } from "../sdk/coupon.js";
 import { designatedByCard, matchMerchant, MIN_INPUT_CHARS } from "../sdk/merchants.js";
 import { applyOverrides, listOverrides, OVERRIDE_LABEL } from "../sdk/override.js";
-import { seedDefaultChannels } from "../sdk/channels.js";
+import { channelCandidates, matchChannel, seedDefaultChannels, setCanonical } from "../sdk/channels.js";
 import { todayDate } from "../sdk/snapshot.js";
 
 export const DISCLAIMER = "回饋內容以發卡行官方公告為準，本工具僅供參考。";
 export const NOT_WRITTEN = "官網沒有寫";
 
-const COUPON_LABELS = Object.freeze({ required: "需領券", claimed: "已領", "not-required": "無需領券", unknown: "未知" });
+export const COUPON_LABELS = Object.freeze({ required: "需領券", claimed: "已領", "not-required": "無需領券", unknown: "未知" });
 const MERCHANT_MESSAGES = Object.freeze({
   "too-short": `請至少輸入 ${MIN_INPUT_CHARS} 個字。`,
   "not-listed": "未列在指定商家，請以官網為準。",
@@ -39,7 +39,7 @@ function convenienceText(rule) {
 }
 
 // A source link is only made from a published address that starts with https; anything else is shown as plain text.
-function sourceCell(rule) {
+export function sourceCell(rule) {
   if (rule.isUserOverride) return el("span", { text: `${OVERRIDE_LABEL}（${rule.overriddenAt ?? ""}，無官方來源）` });
   const parts = [];
   if (typeof rule.source === "string" && /^https:\/{2}/.test(rule.source)) {
@@ -88,6 +88,17 @@ export function mountQueryPage(root, { store, rules, rewardState, today = todayD
     const channel = resolveChannel(channelInput.value, dataChannels, seedDefaultChannels(store));
     if (channel === null) {
       out.append(el("p", { text: `資料裡沒有這個通路的回饋。目前有資料的通路：${dataChannels.join("、")}` }));
+      // Overlapping names are only offered; the user confirms one. If the typed text is one of the user's own
+      // channels the confirmation is remembered (canonicalId), otherwise it is used for this query only.
+      const userChannels = seedDefaultChannels(store);
+      for (const name of channelCandidates(channelInput.value, dataChannels, userChannels)) {
+        out.append(el("button", { type: "button", text: `你是指「${name}」嗎？`, onclick: () => {
+          const own = matchChannel(channelInput.value, userChannels);
+          if (own.matched) setCanonical(store, own.id, name);
+          else channelInput.value = name;
+          render();
+        } }));
+      }
       return;
     }
     const rulesNow = applyOverrides(published, listOverrides(store));
