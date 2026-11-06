@@ -6,6 +6,7 @@ import { createStore, browserBackend } from "./storage/store.js";
 import { mountImportPage } from "./ui/import-page.js";
 import { mountQueryPage } from "./ui/query-page.js";
 import { mountHealthPage } from "./ui/health-page.js";
+import { mountFeedbackPage } from "./ui/feedback-page.js";
 import { mountChannelsPage } from "./ui/channels-page.js";
 import { loadRewardData } from "./sdk/reward-data.js";
 import { todayDate } from "./sdk/snapshot.js";
@@ -35,9 +36,12 @@ async function start() {
   }
   const rewardState = loadRewardData({ text: rewardText, rules });
   mountRiskNotice(root, { store, onCleared: () => location.reload() });
-  mountQueryPage(root, { store, rules, rewardState });
-  mountHealthPage(root, { store, rewardState });
+  let feedback = null;
+  const onFeedback = () => feedback?.refresh();
+  mountQueryPage(root, { store, rules, rewardState, onFeedback });
+  mountHealthPage(root, { store, rewardState, onFeedback });
   mountChannelsPage(root, { store });
+  feedback = mountFeedbackPage(root, { store, rewardState });
   mountImportPage(root, { store, rules });
 }
 

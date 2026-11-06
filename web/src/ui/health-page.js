@@ -7,6 +7,7 @@ import { el, clear, formatMoney, formatRate } from "./render.js";
 import { healthCheck } from "../sdk/health-check.js";
 import { healthInputs } from "../sdk/health-input.js";
 import { applyOverrides, listOverrides, OVERRIDE_LABEL } from "../sdk/override.js";
+import { KIND_CHANNEL_NOT_FOUND, recordFailure } from "../sdk/feedback.js";
 import { seedDefaultChannels, setCanonical } from "../sdk/channels.js";
 import { COUPON_LABELS, DISCLAIMER, sourceCell } from "./query-page.js";
 
@@ -28,7 +29,7 @@ const VERDICTS = Object.freeze({
 const cardText = (c) => `${c.issuer} ${c.cardName}${c.rule.isUserOverride ? `（${OVERRIDE_LABEL}）` : ""}`;
 const rewardText = (c) => `${formatMoney(c.reward)}${c.capped ? "（已達月上限）" : ""}`;
 
-export function mountHealthPage(root, { store, rewardState }) {
+export function mountHealthPage(root, { store, rewardState, onFeedback = () => {} }) {
   const section = el("section", { class: "health" }, [el("h2", { text: "信用卡健檢" })]);
   root.append(section);
 
@@ -55,6 +56,10 @@ export function mountHealthPage(root, { store, rewardState }) {
     }
     const rulesNow = applyOverrides(published, listOverrides(store));
     const result = healthCheck({ rewardState, rules: rulesNow, heldCards, rows, paymentMethod: method.value, userChannels: channels });
+
+    let queued = false;
+    for (const r of result.rows) if (r.status === "no-data" && r.channel === null && recordFailure(store, KIND_CHANNEL_NOT_FOUND, r.channelName).recorded) queued = true;
+    if (queued) onFeedback();
 
     out.append(el("p", { text: result.verdict === "changes-suggested"
       ? `有 ${result.rows.filter((r) => r.status === "better-available").length} 個通路找到回饋更高的卡，每月預估合計可多拿 ${formatMoney(result.totalMonthlyGain)}。${result.complete ? "" : "另有通路無法判斷。"}`

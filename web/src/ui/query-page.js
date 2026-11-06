@@ -8,6 +8,7 @@ import { capExplanation } from "../sdk/cap.js";
 import { nextOpenDate, isClaimed, markClaimed, unmarkClaimed } from "../sdk/coupon.js";
 import { designatedByCard, matchMerchant, MIN_INPUT_CHARS } from "../sdk/merchants.js";
 import { applyOverrides, listOverrides, OVERRIDE_LABEL } from "../sdk/override.js";
+import { KIND_CHANNEL_NOT_FOUND, recordFailure } from "../sdk/feedback.js";
 import { channelCandidates, matchChannel, seedDefaultChannels, setCanonical } from "../sdk/channels.js";
 import { todayDate } from "../sdk/snapshot.js";
 
@@ -51,7 +52,7 @@ export function sourceCell(rule) {
   return el("span", {}, parts);
 }
 
-export function mountQueryPage(root, { store, rules, rewardState, today = todayDate() }) {
+export function mountQueryPage(root, { store, rules, rewardState, today = todayDate(), onFeedback = () => {} }) {
   const section = el("section", { class: "query" }, [el("h2", { text: "通路查詢" })]);
   root.append(section);
 
@@ -87,6 +88,7 @@ export function mountQueryPage(root, { store, rules, rewardState, today = todayD
     clear(merchantsOut);
     const channel = resolveChannel(channelInput.value, dataChannels, seedDefaultChannels(store));
     if (channel === null) {
+      if (recordFailure(store, KIND_CHANNEL_NOT_FOUND, channelInput.value).recorded) onFeedback();
       out.append(el("p", { text: `資料裡沒有這個通路的回饋。目前有資料的通路：${dataChannels.join("、")}` }));
       // Overlapping names are only offered; the user confirms one. If the typed text is one of the user's own
       // channels the confirmation is remembered (canonicalId), otherwise it is used for this query only.

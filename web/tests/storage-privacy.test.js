@@ -60,7 +60,7 @@ test("the backup says it is plain text, and holds exactly the collections that w
   const backup = exportBackup(store, NOW);
   assert.equal(backup.plaintext, true);
   assert.equal(backup.exportedAt, NOW.toISOString());
-  assert.deepEqual(Object.keys(backup.collections).sort(), ["cards", "channels", "claims", "habits", "mappings", "overrides", "settings", "snapshots"]);
+  assert.deepEqual(Object.keys(backup.collections).sort(), ["cards", "channels", "claims", "feedback", "habits", "mappings", "overrides", "settings", "snapshots"]);
   assert.equal(backup.collections.settings[0].largeItemThreshold, 20000);
 });
 

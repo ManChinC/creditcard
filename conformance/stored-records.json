@@ -1292,6 +1292,169 @@
      }
     ]
    }
+  },
+  {
+   "id": "feedback-valid",
+   "ruleSet": "stored-feedback",
+   "input": {
+    "id": "fb-0a1b2c3d",
+    "kind": "channel-not-found",
+    "text": "CPC 加油",
+    "createdAt": "2026-11-06"
+   },
+   "settings": {},
+   "expect": {
+    "decision": "allow",
+    "failures": []
+   }
+  },
+  {
+   "id": "feedback-unknown-field",
+   "ruleSet": "stored-feedback",
+   "input": {
+    "id": "fb-0a1b2c3d",
+    "kind": "channel-not-found",
+    "text": "CPC 加油",
+    "createdAt": "2026-11-06",
+    "cardName": "CUBE 卡"
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "known-fields",
+      "path": "",
+      "code": "UNKNOWN_FIELD"
+     }
+    ]
+   }
+  },
+  {
+   "id": "feedback-bad-kind",
+   "ruleSet": "stored-feedback",
+   "input": {
+    "id": "fb-0a1b2c3d",
+    "kind": "other",
+    "text": "CPC 加油",
+    "createdAt": "2026-11-06"
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "kind",
+      "path": "kind",
+      "code": "KIND_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "feedback-empty-text",
+   "ruleSet": "stored-feedback",
+   "input": {
+    "id": "fb-0a1b2c3d",
+    "kind": "channel-not-found",
+    "text": "",
+    "createdAt": "2026-11-06"
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "text",
+      "path": "text",
+      "code": "NAME_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "feedback-too-long",
+   "ruleSet": "stored-feedback",
+   "input": {
+    "id": "fb-0a1b2c3d",
+    "kind": "channel-not-found",
+    "text": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "createdAt": "2026-11-06"
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "text",
+      "path": "text",
+      "code": "NAME_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "feedback-markup",
+   "ruleSet": "stored-feedback",
+   "input": {
+    "id": "fb-0a1b2c3d",
+    "kind": "channel-not-found",
+    "text": "<b>a</b>",
+    "createdAt": "2026-11-06"
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "text",
+      "path": "text",
+      "code": "NAME_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "feedback-card-number",
+   "ruleSet": "stored-feedback",
+   "input": {
+    "id": "fb-0a1b2c3d",
+    "kind": "channel-not-found",
+    "text": "4111 1111 1111 1111",
+    "createdAt": "2026-11-06"
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "text",
+      "path": "text",
+      "code": "NAME_INVALID"
+     }
+    ]
+   }
+  },
+  {
+   "id": "feedback-bad-date",
+   "ruleSet": "stored-feedback",
+   "input": {
+    "id": "fb-0a1b2c3d",
+    "kind": "channel-not-found",
+    "text": "CPC 加油",
+    "createdAt": "2026-13-01"
+   },
+   "settings": {},
+   "expect": {
+    "decision": "deny",
+    "failures": [
+     {
+      "rule": "created-at",
+      "path": "createdAt",
+      "code": "DATE_INVALID"
+     }
+    ]
+   }
   }
  ]
 }

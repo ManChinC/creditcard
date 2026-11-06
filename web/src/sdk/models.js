@@ -21,6 +21,7 @@ export const COLLECTIONS = Object.freeze({
   settings: "stored-settings",
   claims: "stored-claim",
   overrides: "stored-override",
+  feedback: "stored-feedback",
 });
 
 export const SETTINGS_ID = "settings";
@@ -72,6 +73,11 @@ export function makeClaim({ id, issuer, cardName, channel, paymentMethod, claime
 // The user's own correction of one reward rule, kept in this browser only (FR-021, FR-032).
 export function makeOverride({ id, overriddenAt, rule }) {
   return { id, overriddenAt, rule };
+}
+
+// One failed channel search kept in this browser until the user exports or clears it (kind: "channel-not-found").
+export function makeFeedback({ id, kind, text, createdAt }) {
+  return { id, kind, text, createdAt };
 }
 
 export function makeSettings({ largeItemThreshold = DEFAULT_LARGE_ITEM_THRESHOLD } = {}) {

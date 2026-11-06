@@ -1146,6 +1146,48 @@
           "reason": "CYCLE_INVALID"
         }
       ]
+    },
+    "stored-feedback": {
+      "source": "specs/001-card-reward-optimizer/spec.md Edge Cases (channel-match failure queue, decision 2026-11-06). Local queue only; nothing is sent automatically (FR-032). Field set and length limits are [INFERRED].",
+      "rules": [
+        {
+          "id": "known-fields",
+          "path": "",
+          "checks": [{"noUnknownFields": ["id", "kind", "text", "createdAt"]}],
+          "reason": "UNKNOWN_FIELD"
+        },
+        {
+          "id": "id",
+          "path": "id",
+          "checks": [{"required": true}, {"type": "string"}, {"pattern": "[A-Za-z0-9_-]{1,40}"}],
+          "reason": "ID_INVALID"
+        },
+        {
+          "id": "kind",
+          "path": "kind",
+          "checks": [{"required": true}, {"enum": ["channel-not-found"]}],
+          "reason": "KIND_INVALID"
+        },
+        {
+          "id": "text",
+          "path": "text",
+          "checks": [
+            {"required": true},
+            {"type": "string"},
+            {"minLength": 1},
+            {"maxLength": 30},
+            {"plainText": true},
+            {"noCardNumber": true}
+          ],
+          "reason": "NAME_INVALID"
+        },
+        {
+          "id": "created-at",
+          "path": "createdAt",
+          "checks": [{"required": true}, {"type": "string"}, {"pattern": "[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])"}],
+          "reason": "DATE_INVALID"
+        }
+      ]
     }
   }
 }

@@ -203,7 +203,7 @@ description: "Task list for 信用卡消費匯入與通路回饋最佳化"
 - [ ] T088 安全強化審查：公開 JSON 完整性（是否簽章，research.md 風險 3）、兩個執行器行為差異、貼上內容注入
 - [ ] T089 依 `quickstart.md` 執行全部 10 個驗證情境
 - [x] T091 ⚠️ DECISION（2026-11-06 完成）通路與公開資料通路名稱的對應：以公開資料名稱為準、`canonicalId`、候選由使用者確認、使用者自行加別名、自動去除括號與「含…」。已實作 `web/src/sdk/channels.js`（`extractCore`、`channelCandidates`、`setCanonical`）、`resolveChannel`、`stored-channel` 規則與一致性案例、通路畫面 `web/src/ui/channels-page.js`，並已寫回 spec.md、data-model.md、published-reward-data.md
-- [ ] T092 ⚠️ DECISION 比對失敗的輸入回傳給管理者：與 FR-032、SC-010 衝突 `[CONFLICT]`；須決定是否修訂這兩條、回傳內容、使用者同意方式與傳送管道（公開頁面無後端）。決定前不實作
+- [ ] T092 ⚠️ DECISION 比對失敗的輸入讓管理者知道：已實作「本機佇列＋使用者自行匯出」（`web/src/sdk/feedback.js`、`web/src/ui/feedback-page.js`、`stored-feedback` 規則與一致性案例），不自動傳送，因此不與 FR-032、SC-010 衝突；仍待決定：佇列欄位與上限（`[INFERRED]`）是否接受、報告交給管理者的管道、是否在 FR-032 補一句「使用者主動複製不算傳送」
 - [ ] T093 ⚠️ DECISION 提供「去除領域後綴」清單（例如「加油站」），寫入 spec.md 與 `extractCore`；目前只去除括號與「含…」
 - [ ] T090 重新驗證 `specs/001-card-reward-optimizer/checklists/requirements.md`
 
